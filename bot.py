@@ -4,24 +4,30 @@ import datetime
 from datetime import datetime
 
 bot = commands.Bot(command_prefix='@')
-users = {}
 
 @bot.command()
 async def LFG(ctx):
     role = discord.utils.get(ctx.message.guild.roles, name="LFG")
     if role in ctx.message.author.roles:
-        del users[ctx.message.author.name]
+        await ctx.message.author.remove_roles(role)
         await ctx.send(str(ctx.message.author.name) + "is no longer looking for a game.")
     else:
-        users[ctx.message.author.name] = str(datetime.now())
         await ctx.message.author.add_roles(role)
-        for k,v in users.items():
-            await ctx.send("As of " + v + ",  " + str(k) + " is looking for a game.")
+        await ctx.send(str(ctx.message.author.name) + " is looking for a game.")
 
 @bot.command()
 async def whos_LFG(ctx):
-    for k,v in users.items():
-        await ctx.send(str(k) + " is looking for a game.")
+    currently_looking = []
+    role = discord.utils.get(ctx.message.guild.roles, name="LFG")
+    for member in ctx.message.guild.members:
+        if role in member.roles:
+            currently_looking.append(member)
+    if len(currently_looking) > 0:
+        for member in currently_looking:
+            await ctx.send(str(member.name) + " is looking for a game.")
+    else:
+        await ctx.send("Nobody is looking for a game :(")
+
 
 @bot.command()
 async def info(ctx):
