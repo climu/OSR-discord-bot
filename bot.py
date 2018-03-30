@@ -7,18 +7,19 @@ bot = commands.Bot(command_prefix='@')
 users = {}
 
 @bot.command()
-async def looking(ctx):
-    users[ctx.message.author.name] = str(datetime.now())
-    for k,v in users.items():
-        await ctx.send("As of " + v + ",  " + str(k) + " is looking for a game.")
+async def LFG(ctx):
+    role = discord.utils.get(ctx.message.guild.roles, name="LFG")
+    if role in ctx.message.author.roles:
+        del users[ctx.message.author.name]
+        await ctx.send(str(ctx.message.author.name) + "is no longer looking for a game.")
+    else:
+        users[ctx.message.author.name] = str(datetime.now())
+        await ctx.message.author.add_roles(role)
+        for k,v in users.items():
+            await ctx.send("As of " + v + ",  " + str(k) + " is looking for a game.")
 
 @bot.command()
-async def not_looking(ctx):
-    del users[ctx.message.author.name]
-    await ctx.send(str(ctx.message.author.name) + "is no longer looking for a game.")
-
-@bot.command()
-async def whos_looking(ctx):
+async def whos_LFG(ctx):
     for k,v in users.items():
         await ctx.send(str(k) + " is looking for a game.")
 
@@ -34,9 +35,8 @@ bot.remove_command('help')
 async def help(ctx):
     embed = discord.Embed(title="Looking For Game Bot", description="Keeps track of who is currently looking for a game. The following commands are available:", color=0xeee657)
 
-    embed.add_field(name="@looking", value="Sets your status to looking.", inline=False)
-    embed.add_field(name="@not_looking", value="Sets your status to not looking.", inline=False)
-    embed.add_field(name="@whos_looking", value="Tells you who is currently looking.", inline=False)
+    embed.add_field(name="@LFG", value="Toggles your role for LFG.", inline=False)
+    embed.add_field(name="@whos_LFG", value="Tells you who is currently looking.", inline=False)
     embed.add_field(name="@info", value="Gives a little info about the bot.", inline=False)
     embed.add_field(name="@help", value="Gives this message.", inline=False)
 
