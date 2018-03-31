@@ -2,18 +2,25 @@ import discord
 from discord.ext import commands
 import datetime
 from datetime import datetime
+from datetime import timedelta
+import asyncio
 
 bot = commands.Bot(command_prefix='@')
+guild_id = 429272104110915584
+minutes_in_a_day = 1440
+expiration_times = {}
 
 @bot.command()
-async def LFG(ctx):
+async def LFG(ctx, minutes=minutes_in_a_day):
     role = discord.utils.get(ctx.message.guild.roles, name="LFG")
     if role in ctx.message.author.roles:
         await ctx.message.author.remove_roles(role)
-        await ctx.send(str(ctx.message.author.name) + "is no longer looking for a game.")
+        await ctx.send(str(ctx.message.author.name) + " is no longer looking for a game.")
     else:
+        expiration_time = datetime.now() + timedelta(minutes=minutes)
+        expiration_times[ctx.author.id] = expiration_time
         await ctx.message.author.add_roles(role)
-        await ctx.send(str(ctx.message.author.name) + " is looking for a game.")
+        await ctx.send("Hey, @LFG! " + str(ctx.message.author.name) + " is looking for a game.")
 
 @bot.command()
 async def whos_LFG(ctx):
@@ -41,11 +48,23 @@ bot.remove_command('help')
 async def help(ctx):
     embed = discord.Embed(title="Looking For Game Bot", description="Keeps track of who is currently looking for a game. The following commands are available:", color=0xeee657)
 
-    embed.add_field(name="@LFG", value="Toggles your role for LFG.", inline=False)
+    embed.add_field(name="@LFG [minutes]", value="Toggles your role for LFG. You can limit the length of time you will be LFG by entering a number of minutes after the command.", inline=False)
     embed.add_field(name="@whos_LFG", value="Tells you who is currently looking.", inline=False)
     embed.add_field(name="@info", value="Gives a little info about the bot.", inline=False)
     embed.add_field(name="@help", value="Gives this message.", inline=False)
 
     await ctx.send(embed=embed)
 
+async def check_LFG():
+    await bot.wait_until_ready()
+    role = discord.utils.get(bot.get_guild(guild_id).roles, name="LFG")
+    while not bot.is_closed == True:
+        print(expiration_times)
+        for uid, expiration_time in expiration_times.items():
+            if datetime.now() > expiration_time:
+                await discord.utils.get(bot.get_all_members(), id=uid).remove_roles(role)
+
+        await asyncio.sleep(60)
+
+bot.loop.create_task(check_LFG())
 bot.run('NDI5MjY3Nzc0NTk0ODc1Mzkz.DZ_XrA.DmS3hEHTAJju95TnsQJt1YxDAfg')
