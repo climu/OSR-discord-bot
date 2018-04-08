@@ -12,3 +12,5 @@ This bot so far has the following commands:
 
 @help - A list of commands.
 ```
+
+To run it, you'll need to provide your own bot token, to be pulled from your shell's environment variables (`LFG_TOKEN`). In my case, I added `export LFG_TOKEN="my-token-here"` to `~/.zshenv` (since I use Z Shell).

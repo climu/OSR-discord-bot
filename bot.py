@@ -1,3 +1,4 @@
+import os
 import discord
 from discord.ext import commands
 import datetime
@@ -67,4 +68,4 @@ async def check_LFG():
         await asyncio.sleep(60)
 
 bot.loop.create_task(check_LFG())
-bot.run('NDI5MjY3Nzc0NTk0ODc1Mzkz.DZ_XrA.DmS3hEHTAJju95TnsQJt1YxDAfg')
+bot.run(os.environ["LFG_TOKEN"])
