@@ -1,0 +1,6 @@
+discord-rewrite==1.0.0
+discord
+asyncio
+aiohttp
+websockets
+async-timeout

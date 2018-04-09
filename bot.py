@@ -15,10 +15,9 @@ role = 0
 async def get_role():
     global role
     if role == 0:
-        print("waste of time")
         role = discord.utils.get(bot.get_guild(guild_id).roles, name="LFG")
 
-@bot.command()
+@bot.command(pass_context=True)
 async def LFG(ctx, minutes=minutes_in_a_day):
     if role in ctx.message.author.roles:
         await ctx.message.author.remove_roles(role)
@@ -30,7 +29,7 @@ async def LFG(ctx, minutes=minutes_in_a_day):
         await ctx.message.author.add_roles(role)
         await ctx.send("Hey, @LFG! " + str(ctx.message.author.name) + " is looking for a game.")
 
-@bot.command()
+@bot.command(pass_context=True)
 async def whos_LFG(ctx):
     currently_looking = []
     role = discord.utils.get(ctx.message.guild.roles, name="LFG")
@@ -44,7 +43,7 @@ async def whos_LFG(ctx):
         await ctx.send("Nobody is looking for a game :(")
 
 
-@bot.command()
+@bot.command(pass_context=True)
 async def info(ctx):
     embed = discord.Embed(title="Looking For Game Bot", description="Keeps track of who is currently looking for a game.", color=0xeee657)
     embed.add_field(name="Author", value="FluffM")
@@ -52,7 +51,7 @@ async def info(ctx):
 
 bot.remove_command('help')
 
-@bot.command()
+@bot.command(pass_context=True)
 async def help(ctx):
     embed = discord.Embed(title="Looking For Game Bot", description="Keeps track of who is currently looking for a game. The following commands are available:", color=0xeee657)
 
