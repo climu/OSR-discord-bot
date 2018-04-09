@@ -10,14 +10,21 @@ bot = commands.Bot(command_prefix='@')
 guild_id = 429272104110915584
 minutes_in_a_day = 1440
 expiration_times = {}
+role = 0
+
+async def get_role():
+    global role
+    if role == 0:
+        print("waste of time")
+        role = discord.utils.get(bot.get_guild(guild_id).roles, name="LFG")
 
 @bot.command()
 async def LFG(ctx, minutes=minutes_in_a_day):
-    role = discord.utils.get(ctx.message.guild.roles, name="LFG")
     if role in ctx.message.author.roles:
         await ctx.message.author.remove_roles(role)
         await ctx.send(str(ctx.message.author.name) + " is no longer looking for a game.")
     else:
+        print(role)
         expiration_time = datetime.now() + timedelta(minutes=minutes)
         expiration_times[ctx.author.id] = expiration_time
         await ctx.message.author.add_roles(role)
@@ -58,7 +65,7 @@ async def help(ctx):
 
 async def check_LFG():
     await bot.wait_until_ready()
-    role = discord.utils.get(bot.get_guild(guild_id).roles, name="LFG")
+    await get_role()
     while not bot.is_closed == True:
         print(expiration_times)
         for uid, expiration_time in expiration_times.items():
