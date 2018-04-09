@@ -7,7 +7,7 @@ from datetime import timedelta
 import asyncio
 
 bot = commands.Bot(command_prefix='@')
-guild_id = 429272104110915584
+guild_id = 287487891003932672
 minutes_in_a_day = 1440
 expiration_times = {}
 role = 0
@@ -18,7 +18,7 @@ async def get_role():
         role = discord.utils.get(bot.get_guild(guild_id).roles, name="LFG")
 
 @bot.command(pass_context=True)
-async def LFG(ctx, minutes=minutes_in_a_day):
+async def im_LFG(ctx, minutes=minutes_in_a_day):
     if role in ctx.message.author.roles:
         await ctx.message.author.remove_roles(role)
         await ctx.send(str(ctx.message.author.name) + " is no longer looking for a game.")
