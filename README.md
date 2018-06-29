@@ -1,5 +1,5 @@
-# Looking For Game Bot
-### Built to be used on the OSR Discord server
+# Discord bot of the Open Study Room
+### Huge thanks to FluffM for coding it. Original code can be found [here](https://github.com/Thrillberg/looking-for-game-bot).
 
 This bot so far has the following commands:
 
