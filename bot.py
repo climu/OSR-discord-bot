@@ -8,6 +8,18 @@ import asyncio
 
 bot = commands.Bot(command_prefix='!')
 guild_id = 287487891003932672
+
+id = {'LFG'       : 433023079183286282,
+      'tusmegoers': 462186851747233793,
+      'reviewers' : 462187005602955266,
+      'dan'       : 462186943221071872,
+      'sdk'       : 462186975240388620,
+      'ddk'       : 462187620156309514}
+
+del_commands = ["whos_lfg","whos_LFG",
+                "lfg","game","LFG",
+                "no_LFG","no_lfg","no_game"] # These commands by the user will be deleted
+
 minutes_in_a_day = 1440
 expiration_times = {}
 role = 0
@@ -17,6 +29,11 @@ async def get_role():
     if role == 0:
         role = discord.utils.get(bot.get_guild(guild_id).roles, name="LFG")
 
+@bot.event
+async def on_message(message):
+    if any( "!"+item == message.content for item in del_commands):
+        await message.delete()
+    await bot.process_commands(message)
 
 @bot.command(pass_context=True)
 async def cho(ctx):
@@ -48,35 +65,51 @@ async def kj_facepalm(ctx):
     embed.set_image(url="https://cdn.discordapp.com/attachments/366870031285616651/461813881900236821/iozlnkjg.png")
     await ctx.send(embed=embed)
 
-@bot.command(pass_context=True)
+@bot.command(pass_context=True,aliases=["lfg","game"])
 async def LFG(ctx, minutes=minutes_in_a_day):
-    if role in ctx.message.author.roles:
-        await ctx.message.author.remove_roles(role)
-        await ctx.send(str(ctx.message.author.name) + " is no longer looking for a game.")
+    if not str(ctx.message.channel) == "game_request":
+        await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channel for this command.")
     else:
-        expiration_time = datetime.now() + timedelta(minutes=minutes)
-        expiration_times[ctx.author.id] = expiration_time
-        await ctx.message.author.add_roles(role)
-        await ctx.send("Hey, <@&433023079183286282>! " + str(ctx.message.author.name) + " is looking for a game.")
+        if role in ctx.message.author.roles:
+            await ctx.message.author.remove_roles(role)
+            await ctx.send(str(ctx.message.author.name) + " is no longer looking for a game.")
+        else:
+            expiration_time = datetime.now() + timedelta(minutes=minutes)
+            expiration_times[ctx.author.id] = expiration_time
+            await ctx.message.author.add_roles(role)
+            await ctx.send("Hey, <@&"+ str(id["LFG"]) +">! " + str(ctx.message.author.name) + " is looking for a game.")
 
-@bot.command(pass_context=True)
-async def whos_LFG(ctx):
-    currently_looking = []
-    role = discord.utils.get(ctx.message.guild.roles, name="LFG")
-    for member in ctx.message.guild.members:
-        if role in member.roles:
-            currently_looking.append(member)
-    if len(currently_looking) > 0:
-        for member in currently_looking:
-            await ctx.send(str(member.name) + " is looking for a game.")
+@bot.command(pass_context=True,aliases=["no_lfg","no_game","remove_lfg"])
+async def no_LFG(ctx, minutes=minutes_in_a_day):
+    if not str(ctx.message.channel) == "game_request":
+        await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channel for this command.")
     else:
-        await ctx.send("Nobody is looking for a game :(")
+        if role in ctx.message.author.roles:
+            await ctx.message.author.remove_roles(role)
+            await ctx.send(str(ctx.message.author.name) + " is no longer looking for a game.")
+
+@bot.command(pass_context=True,aliases=["whos_lfg"])
+async def whos_LFG(ctx):
+    if not str(ctx.message.channel) == "game_request":
+        await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channel for this command.")
+    else:
+        currently_looking = []
+        role = discord.utils.get(ctx.message.guild.roles, name="LFG")
+        for member in ctx.message.guild.members:
+            if role in member.roles:
+                if str(member.status) == "online" :
+                    currently_looking.append(member)
+        if len(currently_looking) == 1:
+            await ctx.send(ctx.message.author.mention + ": Only " + str(currently_looking[0].name) + " is looking for a game.")
+        elif len(currently_looking) > 1:
+            await ctx.send(ctx.message.author.mention + ": The following users are looking for a game:\n" + ', '.join([str(x.name) for x in currently_looking[:-1]])+ " and " + currently_looking[-1].name)
+        else:
+            await ctx.send(ctx.message.author.mention + ": Nobody is looking for a game. :(")
 
 
 @bot.command(pass_context=True)
 async def info(ctx):
     embed = discord.Embed(title="Looking For Game Bot", description="Keeps track of who is currently looking for a game.", color=0xeee657)
-    embed.add_field(name="Author", value="FluffM")
     await ctx.send(embed=embed)
 
 bot.remove_command('help')
