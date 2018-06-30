@@ -100,11 +100,11 @@ async def whos_LFG(ctx):
                 if str(member.status) == "online" :
                     currently_looking.append(member)
         if len(currently_looking) == 1:
-            await ctx.send("Only " + str(currently_looking[0].name) + " is looking for a game.")
+            await ctx.send(ctx.message.author.mention + ": Only " + str(currently_looking[0].name) + " is looking for a game.")
         elif len(currently_looking) > 1:
-            await ctx.send("The following users are looking for a game:\n" + ', '.join([str(x.name) for x in currently_looking[:-1]])+ " and " + currently_looking[-1].name)
+            await ctx.send(ctx.message.author.mention + ": The following users are looking for a game:\n" + ', '.join([str(x.name) for x in currently_looking[:-1]])+ " and " + currently_looking[-1].name)
         else:
-            await ctx.send("Nobody is looking for a game. :(")
+            await ctx.send(ctx.message.author.mention + ": Nobody is looking for a game. :(")
 
 
 @bot.command(pass_context=True)
