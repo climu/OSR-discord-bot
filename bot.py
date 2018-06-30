@@ -9,20 +9,31 @@ import asyncio
 bot = commands.Bot(command_prefix='!')
 guild_id = 287487891003932672
 
-id = {'LFG'       : 433023079183286282,
-      'tusmegoers': 462186851747233793,
-      'reviewers' : 462187005602955266,
-      'dan'       : 462186943221071872,
-      'sdk'       : 462186975240388620,
-      'ddk'       : 462187620156309514}
+id = {
+    'LFG': 433023079183286282,
+    'tusmegoers': 462186851747233793,
+    'reviewers': 462187005602955266,
+    'dan': 462186943221071872,
+    'sdk': 462186975240388620,
+    'ddk': 462187620156309514
+}
 
-del_commands = ["whos_lfg","whos_LFG",
-                "lfg","game","LFG",
-                "no_LFG","no_lfg","no_game"] # These commands by the user will be deleted
+# For the following commands, the calling message will be deleted
+del_commands = [
+    "whos_lfg",
+    "whos_LFG",
+    "lfg",
+    "game",
+    "LFG",
+    "no_LFG",
+    "no_lfg",
+    "no_game"
+]
 
 minutes_in_a_day = 1440
 expiration_times = {}
 role = 0
+
 
 async def get_role():
     global role
@@ -31,7 +42,7 @@ async def get_role():
 
 @bot.event
 async def on_message(message):
-    if any( "!"+item == message.content for item in del_commands):
+    if any("!" + item == message.content for item in del_commands):
         await message.delete()
     await bot.process_commands(message)
 
@@ -77,9 +88,10 @@ async def LFG(ctx, minutes=minutes_in_a_day):
             expiration_time = datetime.now() + timedelta(minutes=minutes)
             expiration_times[ctx.author.id] = expiration_time
             await ctx.message.author.add_roles(role)
-            await ctx.send("Hey, <@&"+ str(id["LFG"]) +">! " + str(ctx.message.author.name) + " is looking for a game.")
+            await ctx.send("Hey, <@&" + str(id["LFG"]) + ">! " + str(ctx.message.author.name) + " is looking for a game.")
 
-@bot.command(pass_context=True,aliases=["no_lfg","no_game","remove_lfg"])
+
+@bot.command(pass_context=True, aliases=["no_lfg", "no_game", "remove_lfg"])
 async def no_LFG(ctx, minutes=minutes_in_a_day):
     if not str(ctx.message.channel) == "game_request":
         await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channel for this command.")
@@ -88,7 +100,8 @@ async def no_LFG(ctx, minutes=minutes_in_a_day):
             await ctx.message.author.remove_roles(role)
             await ctx.send(str(ctx.message.author.name) + " is no longer looking for a game.")
 
-@bot.command(pass_context=True,aliases=["whos_lfg"])
+
+@bot.command(pass_context=True, aliases=["whos_lfg"])
 async def whos_LFG(ctx):
     if not str(ctx.message.channel) == "game_request":
         await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channel for this command.")
@@ -97,7 +110,7 @@ async def whos_LFG(ctx):
         role = discord.utils.get(ctx.message.guild.roles, name="LFG")
         for member in ctx.message.guild.members:
             if role in member.roles:
-                if str(member.status) == "online" :
+                if str(member.status) == "online":
                     currently_looking.append(member)
         if len(currently_looking) == 1:
             await ctx.send(ctx.message.author.mention + ": Only " + str(currently_looking[0].name) + " is looking for a game.")
@@ -114,6 +127,7 @@ async def info(ctx):
 
 bot.remove_command('help')
 
+
 @bot.command(pass_context=True)
 async def help(ctx):
     embed = discord.Embed(title="Looking For Game Bot", description="Keeps track of who is currently looking for a game. The following commands are available:", color=0xeee657)
@@ -125,10 +139,11 @@ async def help(ctx):
 
     await ctx.send(embed=embed)
 
+
 async def check_LFG():
     await bot.wait_until_ready()
     await get_role()
-    while not bot.is_closed == True:
+    while not bot.is_closed:
         for uid, expiration_time in expiration_times.items():
             if datetime.now() > expiration_time:
                 await discord.utils.get(bot.get_all_members(), id=uid).remove_roles(role)
