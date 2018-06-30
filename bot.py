@@ -67,35 +67,44 @@ async def kj_facepalm(ctx):
 
 @bot.command(pass_context=True,aliases=["lfg","game"])
 async def LFG(ctx, minutes=minutes_in_a_day):
-    if role in ctx.message.author.roles:
-        await ctx.message.author.remove_roles(role)
-        await ctx.send(str(ctx.message.author.name) + " is no longer looking for a game.")
+    if not str(ctx.message.channel) == "game_request":
+        await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channel for this command.")
     else:
-        expiration_time = datetime.now() + timedelta(minutes=minutes)
-        expiration_times[ctx.author.id] = expiration_time
-        await ctx.message.author.add_roles(role)
-        await ctx.send("Hey, <@&"+ str(id["LFG"]) +">! " + str(ctx.message.author.name) + " is looking for a game.")
+        if role in ctx.message.author.roles:
+            await ctx.message.author.remove_roles(role)
+            await ctx.send(str(ctx.message.author.name) + " is no longer looking for a game.")
+        else:
+            expiration_time = datetime.now() + timedelta(minutes=minutes)
+            expiration_times[ctx.author.id] = expiration_time
+            await ctx.message.author.add_roles(role)
+            await ctx.send("Hey, <@&"+ str(id["LFG"]) +">! " + str(ctx.message.author.name) + " is looking for a game.")
 
 @bot.command(pass_context=True,aliases=["no_lfg","no_game","remove_lfg"])
 async def no_LFG(ctx, minutes=minutes_in_a_day):
-    if role in ctx.message.author.roles:
-        await ctx.message.author.remove_roles(role)
-        await ctx.send(str(ctx.message.author.name) + " is no longer looking for a game.")
+    if not str(ctx.message.channel) == "game_request":
+        await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channel for this command.")
+    else:
+        if role in ctx.message.author.roles:
+            await ctx.message.author.remove_roles(role)
+            await ctx.send(str(ctx.message.author.name) + " is no longer looking for a game.")
 
 @bot.command(pass_context=True,aliases=["whos_lfg"])
 async def whos_LFG(ctx):
-    currently_looking = []
-    role = discord.utils.get(ctx.message.guild.roles, name="LFG")
-    for member in ctx.message.guild.members:
-        if role in member.roles:
-            if str(member.status) == "online" :
-                currently_looking.append(member)
-    if len(currently_looking) == 1:
-        await ctx.send("Only " + str(currently_looking[0].name) + " is looking for a game.")
-    elif len(currently_looking) > 1:
-        await ctx.send("The following users are looking for a game:\n" + ', '.join([str(x.name) for x in currently_looking[:-1]])+ " and " + currently_looking[-1].name)
+    if not str(ctx.message.channel) == "game_request":
+        await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channel for this command.")
     else:
-        await ctx.send("Nobody is looking for a game. :(")
+        currently_looking = []
+        role = discord.utils.get(ctx.message.guild.roles, name="LFG")
+        for member in ctx.message.guild.members:
+            if role in member.roles:
+                if str(member.status) == "online" :
+                    currently_looking.append(member)
+        if len(currently_looking) == 1:
+            await ctx.send("Only " + str(currently_looking[0].name) + " is looking for a game.")
+        elif len(currently_looking) > 1:
+            await ctx.send("The following users are looking for a game:\n" + ', '.join([str(x.name) for x in currently_looking[:-1]])+ " and " + currently_looking[-1].name)
+        else:
+            await ctx.send("Nobody is looking for a game. :(")
 
 
 @bot.command(pass_context=True)
