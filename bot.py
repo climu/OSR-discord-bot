@@ -31,7 +31,6 @@ async def get_role():
 
 @bot.event
 async def on_message(message):
-#    if message.content == "!whos_LFG":
     if any( "!"+item == message.content for item in del_commands):
         await message.delete()
     await bot.process_commands(message)
