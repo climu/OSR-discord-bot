@@ -5,8 +5,9 @@ import datetime
 from datetime import datetime
 from datetime import timedelta
 import asyncio
+import requests
 
-bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(command_prefix='&')
 guild_id = 287487891003932672
 
 id = {
@@ -76,7 +77,8 @@ async def kj_facepalm(ctx):
     embed.set_image(url="https://cdn.discordapp.com/attachments/366870031285616651/461813881900236821/iozlnkjg.png")
     await ctx.send(embed=embed)
 
-@bot.command(pass_context=True,aliases=["lfg","game"])
+
+@bot.command(pass_context=True, aliases=["lfg", "game", "go", "play"])
 async def LFG(ctx, minutes=minutes_in_a_day):
     if not str(ctx.message.channel) == "game_request":
         await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channel for this command.")
@@ -112,10 +114,26 @@ async def whos_LFG(ctx):
             if role in member.roles:
                 if str(member.status) == "online":
                     currently_looking.append(member)
-        if len(currently_looking) == 1:
-            await ctx.send(ctx.message.author.mention + ": Only " + str(currently_looking[0].name) + " is looking for a game.")
-        elif len(currently_looking) > 1:
-            await ctx.send(ctx.message.author.mention + ": The following users are looking for a game:\n" + ', '.join([str(x.name) for x in currently_looking[:-1]])+ " and " + currently_looking[-1].name)
+        if len(currently_looking) > 0:
+            uids = [member.id for member in currently_looking]
+            infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
+            message = ctx.message.author.mention + ": The following users are looking for a game:\n"
+            for user in currently_looking:
+                message += '**' + user.name + '**'
+                info = infos.get(str(user.id))
+                if info is not None:
+                    kgs_username = info.get('kgs_username')
+                    kgs_rank = info.get('kgs_rank')
+                    ogs_username = info.get('ogs_username')
+                    ogs_rank = info.get('ogs_rank')
+                    if kgs_username is not None or ogs_username is not None:
+                        message += ':'
+                        if ogs_username is not None:
+                            message += ' OGS - ' + ogs_username + ' (' + ogs_rank + ') |'
+                        if kgs_username is not None:
+                            message += ' KGS - ' + kgs_username + ' (' + kgs_rank + ')'
+                message += ' \n'
+            await ctx.send(message)
         else:
             await ctx.send(ctx.message.author.mention + ": Nobody is looking for a game. :(")
 
@@ -127,6 +145,10 @@ async def info(ctx):
 
 bot.remove_command('help')
 
+@bot.command(pass_context=True)
+async def testing(ctx):
+    r = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
+    print(r)
 
 @bot.command(pass_context=True)
 async def help(ctx):
