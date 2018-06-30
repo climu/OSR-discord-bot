@@ -40,11 +40,13 @@ async def get_role():
     if role == 0:
         role = discord.utils.get(bot.get_guild(guild_id).roles, name="LFG")
 
+
 @bot.event
 async def on_message(message):
     if any("!" + item == message.content for item in del_commands):
         await message.delete()
     await bot.process_commands(message)
+
 
 @bot.command(pass_context=True)
 async def cho(ctx):
@@ -52,11 +54,13 @@ async def cho(ctx):
     embed.set_image(url="https://cdn.discordapp.com/attachments/456532168370290695/461802038276390923/cho.png")
     await ctx.send(embed=embed)
 
+
 @bot.command(pass_context=True)
 async def cho_hug(ctx):
     embed = discord.Embed()
     embed.set_image(url="https://cdn.discordapp.com/attachments/430062036903395329/444192620504416268/WroCzKKKj7o.png")
     await ctx.send(embed=embed)
+
 
 @bot.command(pass_context=True)
 async def chang_ho(ctx):
@@ -64,17 +68,20 @@ async def chang_ho(ctx):
     embed.set_image(url="https://cdn.discordapp.com/attachments/430062036903395329/432619582054858806/153746110828-nong01.png")
     await ctx.send(embed=embed)
 
+
 @bot.command(pass_context=True)
 async def yuta(ctx):
     embed = discord.Embed()
     embed.set_image(url="https://cdn.discordapp.com/attachments/430062036903395329/432619582054858806/153746110828-nong01.png")
     await ctx.send(embed=embed)
 
+
 @bot.command(pass_context=True)
 async def kj_facepalm(ctx):
     embed = discord.Embed()
     embed.set_image(url="https://cdn.discordapp.com/attachments/366870031285616651/461813881900236821/iozlnkjg.png")
     await ctx.send(embed=embed)
+
 
 @bot.command(pass_context=True,aliases=["lfg","game"])
 async def LFG(ctx, minutes=minutes_in_a_day):
