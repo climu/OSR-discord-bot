@@ -88,7 +88,8 @@ async def whos_LFG(ctx):
     role = discord.utils.get(ctx.message.guild.roles, name="LFG")
     for member in ctx.message.guild.members:
         if role in member.roles:
-            currently_looking.append(member)
+            if str(member.status) == "online" :
+                currently_looking.append(member)
     if len(currently_looking) == 1:
         await ctx.send("Only " + str(currently_looking[0].name) + " is looking for a game.")
     elif len(currently_looking) > 1:
