@@ -10,14 +10,39 @@ import requests
 bot = commands.Bot(command_prefix='!')
 guild_id = 287487891003932672
 
-id = {
-    'LFG': 433023079183286282,
-    'tusmegoers': 462186851747233793,
-    'reviewers': 462187005602955266,
-    'dan': 462186943221071872,
-    'sdk': 462186975240388620,
-    'ddk': 462187620156309514
+roles_dict = {
+    'go': {
+        "id": 433023079183286282,
+        "allowed_channels": ["game-request", "testing-webhook"],
+        "verbose": "looking for a game"
+    },
+    'tsumego': {
+        "id": 462186851747233793,
+        "allowed_channels": ["general", "tsumego", "tsumego_hint", "tsumego_solutions", "testing-webhook"],
+        "verbose": 'interested in tsumegos'
+    },
+    'review': {
+        "id": 433023079183286282,
+        "allowed_channels": ["general", "game_discussion"],
+        "verbose": "interested in game reviews",
+    },
+    'dan': {
+        "id": 462186943221071872,
+        "allowed_channels": ["general", "game_discussion", "testing-webhook"],
+        "verbose": "dan player",
+    },
+    'sdk': {
+        "id": 462186975240388620,
+        "allowed_channels": ["general", "game_discussion"],
+        "verbose": "single digit kyu player",
+    },
+    'ddk': {
+        "id": 462186975240388620,
+        "allowed_channels": ["general", "game_discussion"],
+        "verbose": "doublle digit kyu player",
+    },
 }
+
 
 # For the following commands, the calling message will be deleted
 del_commands = [
@@ -33,19 +58,14 @@ del_commands = [
 
 # LFG related commands can only be called in the channels below
 lfgChannels = [
-        "game_request",
-        "bot_commands"
-        ]
+    "game_request",
+    "bot_commands"
+]
 
 minutes_in_a_day = 1440
 expiration_times = {}
-role = 0
+roles = 0
 
-
-async def get_role():
-    global role
-    if role == 0:
-        role = discord.utils.get(bot.get_guild(guild_id).roles, name="LFG")
 
 
 @bot.event
@@ -53,6 +73,8 @@ async def on_message(message):
     if any("!" + item == message.content for item in del_commands):
         await message.delete()
     await bot.process_commands(message)
+
+# Here are the pictures commands. That's just for fun.
 
 
 @bot.command(pass_context=True)
@@ -89,6 +111,8 @@ async def kj_facepalm(ctx):
     embed.set_image(url="https://cdn.discordapp.com/attachments/366870031285616651/461813881900236821/iozlnkjg.png")
     await ctx.send(embed=embed)
 
+# Roles managment start here
+
 
 @bot.command(pass_context=True, aliases=["lfg", "game", "go", "play"])
 async def LFG(ctx, minutes=minutes_in_a_day):
@@ -100,11 +124,27 @@ async def LFG(ctx, minutes=minutes_in_a_day):
             expiration_time = datetime.now() + timedelta(minutes=minutes)
             expiration_times[ctx.author.id] = expiration_time
             await ctx.message.author.add_roles(role)
-            await ctx.send("Hey, <@&" + str(id["LFG"]) + ">! " + str(ctx.message.author.name) + " is looking for a game.")
+            await ctx.send("Hey, <@&" + str(roles_id["go"]) + ">! " + str(ctx.message.author.name) + " is looking for a game.")
     else:
         await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channels for this command.")
 
-@bot.command(pass_context=True, aliases=["no_lfg", "no_game", "remove_lfg"])
+
+@bot.command(pass_context=True)
+async def no(ctx, role_name):
+    role_dict = roles_dict.get(role_name)
+    if role_dict is None:
+        return
+    if str(ctx.message.channel) not in role_dict['allowed_channels']:
+        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command:"
+        message += ' '.join(role_dict['allowed_channels'])
+        await ctx.send(message)
+        return
+    role = discord.utils.get(ctx.message.guild.roles, id=role_dict['id'])
+    await ctx.message.author.remove_roles(role)
+    await ctx.send(str(ctx.message.author.name) + " is no longer " + role_dict["verbose"] + ".")
+
+
+@bot.command(pass_context=True, aliases=["no_lfg", "no_game", "remove_lfg", "no_go"])
 async def no_LFG(ctx, minutes=minutes_in_a_day):
     if any(item == str(ctx.message.channel) for item in lfgChannels):
         if role in ctx.message.author.roles:
@@ -114,15 +154,49 @@ async def no_LFG(ctx, minutes=minutes_in_a_day):
         await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channels for this command.")
 
 
+@bot.command(pass_context=True, aliases=["list"])
+async def whos(ctx, role_name):
+    role_dict = roles_dict.get(role_name)
+    if role_dict is None:
+        return
+    if str(ctx.message.channel) not in role_dict['allowed_channels']:
+        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command:"
+        message += ' '.join(role_dict['allowed_channels'])
+        await ctx.send(message)
+        return
+    role = discord.utils.get(ctx.message.guild.roles, id=role_dict['id'])
+    users = [x for x in role.members if str(x.status) == "online"]
+    if len(users) > 0:
+        uids = [member.id for member in users]
+        infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
+        message = ctx.message.author.mention + ": The following users are " + role_dict['verbose'] + ":\n"
+        for user in users:
+            message += '**' + user.name + '**'
+            info = infos.get(str(user.id))
+            if info is not None:
+                kgs_username = info.get('kgs_username')
+                kgs_rank = info.get('kgs_rank')
+                ogs_username = info.get('ogs_username')
+                ogs_rank = info.get('ogs_rank')
+                if kgs_username is not None or ogs_username is not None:
+                    message += ':'
+                    if ogs_username is not None:
+                        message += ' OGS - ' + ogs_username + ' (' + ogs_rank + ') |'
+                    if kgs_username is not None:
+                        message += ' KGS - ' + kgs_username + ' (' + kgs_rank + ')'
+            message += ' \n'
+        await ctx.send(message)
+    else:
+        await ctx.send(ctx.message.author.mention + ": Nobody is " + role_dict['verbose'] + ". :(")
+
 @bot.command(pass_context=True, aliases=["whos_lfg"])
 async def whos_LFG(ctx):
     if any(item == str(ctx.message.channel) for item in lfgChannels):
         currently_looking = []
         role = discord.utils.get(ctx.message.guild.roles, name="LFG")
         for member in ctx.message.guild.members:
-            if role in member.roles:
-                if str(member.status) == "online":
-                    currently_looking.append(member)
+            if role in member.roles and str(member.status) == "online":
+                currently_looking.append(member)
         if len(currently_looking) > 0:
             uids = [member.id for member in currently_looking]
             infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
@@ -146,7 +220,7 @@ async def whos_LFG(ctx):
         else:
             await ctx.send(ctx.message.author.mention + ": Nobody is looking for a game. :(")
     else:
-        await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channels for this command.")        
+        await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channels for this command.")
 
 
 @bot.command(pass_context=True)
@@ -169,7 +243,6 @@ async def help(ctx):
 
 async def check_LFG():
     await bot.wait_until_ready()
-    await get_role()
     while not bot.is_closed:
         for uid, expiration_time in expiration_times.items():
             if datetime.now() > expiration_time:
