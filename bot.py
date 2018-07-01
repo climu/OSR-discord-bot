@@ -7,7 +7,7 @@ from datetime import timedelta
 import asyncio
 import requests
 
-bot = commands.Bot(command_prefix='&')
+bot = commands.Bot(command_prefix='!')
 guild_id = 287487891003932672
 
 roles_dict = {
@@ -248,8 +248,7 @@ async def whos_LFG(ctx):
         await ctx.send(message)
     else:
         await ctx.send(ctx.message.author.mention + ": Nobody is looking for a game. :(")
-else:
-    await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channels for this command.")
+
 
 
 @bot.command(pass_context=True)
