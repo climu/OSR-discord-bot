@@ -22,7 +22,7 @@ roles_dict = {
         "verbose": 'interested in tsumegos'
     },
     'review': {
-        "id": 433023079183286282,
+        "id": 462187005602955266,
         "allowed_channels": ["general", "game_discussion", "bot-commands"],
         "verbose": "interested in game reviews",
     },
@@ -71,6 +71,20 @@ expiration_times = {}
 roles = 0
 
 
+async def add_role(ctx, role_name):
+    role_dict = roles_dict[role_name]
+    if str(ctx.message.channel) not in role_dict['allowed_channels']:
+        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command:"
+        message += ' '.join(role_dict['allowed_channels'])
+        await ctx.send(message)
+        return
+
+    role = discord.utils.get(ctx.message.guild.roles, id=role_dict['id'])
+    if role in ctx.message.author.roles:
+        await ctx.send(ctx.message.author.mention + "Hey, is still " + role_dict["verbose"] + ".")
+    else:
+        await ctx.message.author.add_roles(role)
+        await ctx.send("Hey, " + ctx.message.author.mention + " is " + role_dict["verbose"] + ".")
 
 @bot.event
 async def on_message(message):
@@ -140,7 +154,29 @@ async def go(ctx, minutes=minutes_in_a_day):
         await ctx.message.author.add_roles(role)
         await ctx.send("Hey, <@&" + str(role_dict["id"]) + ">! " + ctx.message.author.mention + " is looking for a game.")
 
+@bot.command(pass_context=True)
+async def dan(ctx):
+    await add_role(ctx, 'dan')
 
+
+@bot.command(pass_context=True)
+async def sdk(ctx):
+    await add_role(ctx, 'sdk')
+
+
+@bot.command(pass_context=True)
+async def ddk(ctx):
+    await add_role(ctx, 'ddk')
+
+
+@bot.command(pass_context=True)
+async def tsumego(ctx):
+    await add_role(ctx, 'tsumego')
+
+
+@bot.command(pass_context=True)
+async def review(ctx):
+    await add_role(ctx, 'review')
 
 @bot.command(pass_context=True)
 async def no(ctx, role_name):
