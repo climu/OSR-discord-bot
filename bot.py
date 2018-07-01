@@ -7,7 +7,7 @@ from datetime import timedelta
 import asyncio
 import requests
 
-bot = commands.Bot(command_prefix='&')
+bot = commands.Bot(command_prefix='!')
 guild_id = 287487891003932672
 
 id = {
