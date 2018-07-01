@@ -143,7 +143,7 @@ async def whos_LFG(ctx):
                     if kgs_username is not None or ogs_username is not None:
                         message += ':'
                         if ogs_username is not None:
-                            message += ' OGS - ' + ogs_username + ' (' + ogs_rank + ') |'
+                            message += ' OGS | ' + ogs_username + ' (' + ogs_rank + ') -'
                         if kgs_username is not None:
                             message += ' KGS - ' + kgs_username + ' (' + kgs_rank + ')'
                 message += ' \n'
