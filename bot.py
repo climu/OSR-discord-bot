@@ -13,32 +13,32 @@ guild_id = 287487891003932672
 roles_dict = {
     'go': {
         "id": 433023079183286282,
-        "allowed_channels": ["game-request", "testing-webhook"],
+        "allowed_channels": ["game-request", "bot-commands"],
         "verbose": "looking for a game"
     },
     'tsumego': {
         "id": 462186851747233793,
-        "allowed_channels": ["general", "tsumego", "tsumego_hint", "tsumego_solutions", "testing-webhook"],
+        "allowed_channels": ["general", "tsumego", "tsumego_hint", "tsumego_solutions", "bot-commands"],
         "verbose": 'interested in tsumegos'
     },
     'review': {
         "id": 433023079183286282,
-        "allowed_channels": ["general", "game_discussion"],
+        "allowed_channels": ["general", "game_discussion", "bot-commands"],
         "verbose": "interested in game reviews",
     },
     'dan': {
         "id": 462186943221071872,
-        "allowed_channels": ["general", "game_discussion", "testing-webhook"],
+        "allowed_channels": ["general", "game_discussion", "bot-commands"],
         "verbose": "dan player",
     },
     'sdk': {
         "id": 462186975240388620,
-        "allowed_channels": ["general", "game_discussion"],
+        "allowed_channels": ["general", "game_discussion", "bot-commands"],
         "verbose": "single digit kyu player",
     },
     'ddk': {
         "id": 462186975240388620,
-        "allowed_channels": ["general", "game_discussion"],
+        "allowed_channels": ["general", "game_discussion", "bot-commands"],
         "verbose": "doublle digit kyu player",
     },
 }
