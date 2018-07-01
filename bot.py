@@ -68,8 +68,15 @@ lfgChannels = [
 
 minutes_in_a_day = 1440
 expiration_times = {}
-roles = 0
+roles_are_set = False
 
+async def get_roles():
+    global roles_are_set
+    if not roles_are_set:
+        for name, role_dict in roles_dict.items():
+            role = discord.utils.get(bot.get_guild(guild_id).roles, id=role_dict['id'])
+            roles_dict[name].update({"role": role})
+        roles_are_set = True
 
 async def add_role(ctx, role_name):
     role_dict = roles_dict[role_name]
@@ -79,7 +86,7 @@ async def add_role(ctx, role_name):
         await ctx.send(message)
         return
 
-    role = discord.utils.get(ctx.message.guild.roles, id=role_dict['id'])
+    role = role_dict["role"]
     if role in ctx.message.author.roles:
         await ctx.send(ctx.message.author.mention + "Hey, is still " + role_dict["verbose"] + ".")
     else:
@@ -145,7 +152,8 @@ async def go(ctx, minutes=minutes_in_a_day):
         await ctx.send(message)
         return
 
-    role = discord.utils.get(ctx.message.guild.roles, id=role_dict['id'])
+    role = role_dict["role"]
+
     expiration_time = datetime.now() + timedelta(minutes=minutes)
     expiration_times[ctx.author.id] = expiration_time
     if role in ctx.message.author.roles:
@@ -188,7 +196,8 @@ async def no(ctx, role_name):
         message += ' '.join(role_dict['allowed_channels'])
         await ctx.send(message)
         return
-    role = discord.utils.get(ctx.message.guild.roles, id=role_dict['id'])
+    role = role_dict["role"]
+
     await ctx.message.author.remove_roles(role)
     await ctx.send(str(ctx.message.author.name) + " is no longer " + role_dict["verbose"] + ".")
 
@@ -203,7 +212,7 @@ async def no_go(ctx, minutes=minutes_in_a_day):
         await ctx.send(message)
         return
 
-    role = discord.utils.get(ctx.message.guild.roles, id=role_dict['id'])
+    role = role_dict["role"]
 
     if role in ctx.message.author.roles:
         await ctx.message.author.remove_roles(role)
@@ -221,7 +230,8 @@ async def whos(ctx, role_name):
         message += ' '.join(role_dict['allowed_channels'])
         await ctx.send(message)
         return
-    role = discord.utils.get(ctx.message.guild.roles, id=role_dict['id'])
+    role = role_dict["role"]
+
     users = [x for x in role.members if str(x.status) == "online"]
     if len(users) > 0:
         uids = [member.id for member in users]
@@ -256,10 +266,8 @@ async def whos_LFG(ctx):
         await ctx.send(message)
         return
 
-    role = discord.utils.get(ctx.message.guild.roles, id=role_dict['id'])
+    role = role_dict["role"]
 
-    currently_looking = []
-    role = discord.utils.get(ctx.message.guild.roles, name="LFG")
     currently_looking = [x for x in role.members if str(x.status) == "online"]
 
     if len(currently_looking) > 0:
@@ -308,8 +316,9 @@ async def help(ctx):
 
 async def check_LFG():
     await bot.wait_until_ready()
+    await get_roles()
     while not bot.is_closed:
-        role = discord.utils.get(ctx.message.guild.roles, id=role_dict['go']['id'])
+        role = discord.utils.get(ctx.message.guild.roles, id=roles_dict['go']['id'])
         for uid, expiration_time in expiration_times.items():
             if datetime.now() > expiration_time:
                 await discord.utils.get(bot.get_all_members(), id=uid).remove_roles(role)
