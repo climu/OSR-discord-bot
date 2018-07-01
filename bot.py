@@ -7,7 +7,7 @@ from datetime import timedelta
 import asyncio
 import requests
 
-bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(command_prefix='&')
 guild_id = 287487891003932672
 
 roles_dict = {
@@ -76,7 +76,10 @@ roles = 0
 async def on_message(message):
     if any("!" + item == message.content for item in del_commands):
         await message.delete()
-    await bot.process_commands(message)
+    try:
+        await bot.process_commands(message)
+    except "NOT FOUND":
+        pass
 
 # Here are the pictures commands. That's just for fun.
 
@@ -120,17 +123,23 @@ async def kj_facepalm(ctx):
 
 @bot.command(pass_context=True, aliases=["lfg", "game", "LFG", "play", "GO", "PLAY", "GAME"])
 async def go(ctx, minutes=minutes_in_a_day):
-    if any(item == str(ctx.message.channel) for item in lfgChannels):
-        if role in ctx.message.author.roles:
-            await ctx.message.author.remove_roles(role)
-            await ctx.send(ctx.message.author.mention + " is no longer looking for a game.")
-        else:
-            expiration_time = datetime.now() + timedelta(minutes=minutes)
-            expiration_times[ctx.author.id] = expiration_time
-            await ctx.message.author.add_roles(role)
-            await ctx.send("Hey, <@&" + str(roles_id["go"]) + ">! " + ctx.message.author.mention + " is looking for a game.")
+    role_dict = roles_dict['go']
+
+    if str(ctx.message.channel) not in role_dict['allowed_channels']:
+        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command:"
+        message += ' '.join(role_dict['allowed_channels'])
+        await ctx.send(message)
+        return
+
+    role = discord.utils.get(ctx.message.guild.roles, id=role_dict['id'])
+    expiration_time = datetime.now() + timedelta(minutes=minutes)
+    expiration_times[ctx.author.id] = expiration_time
+    if role in ctx.message.author.roles:
+        await ctx.send(ctx.message.author.mention + "Hey, <@&" + str(role_dict["id"]) + ">! is still looking for a game.")
     else:
-        await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channels for this command.")
+        await ctx.message.author.add_roles(role)
+        await ctx.send("Hey, <@&" + str(role_dict["id"]) + ">! " + ctx.message.author.mention + " is looking for a game.")
+
 
 
 @bot.command(pass_context=True)
@@ -150,12 +159,20 @@ async def no(ctx, role_name):
 
 @bot.command(pass_context=True, aliases=["no_lfg", "no_game", "remove_lfg", "no_play"])
 async def no_go(ctx, minutes=minutes_in_a_day):
-    if any(item == str(ctx.message.channel) for item in lfgChannels):
-        if role in ctx.message.author.roles:
-            await ctx.message.author.remove_roles(role)
-            await ctx.send(ctx.message.author.mention + " is no longer looking for a game.")
-    else:
-        await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channels for this command.")
+    role_dict = roles_dict['go']
+
+    if str(ctx.message.channel) not in role_dict['allowed_channels']:
+        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command:"
+        message += ' '.join(role_dict['allowed_channels'])
+        await ctx.send(message)
+        return
+
+    role = discord.utils.get(ctx.message.guild.roles, id=role_dict['id'])
+
+    if role in ctx.message.author.roles:
+        await ctx.message.author.remove_roles(role)
+        await ctx.send(ctx.message.author.mention + " is no longer looking for a game.")
+
 
 
 @bot.command(pass_context=True, aliases=["list"])
@@ -185,51 +202,59 @@ async def whos(ctx, role_name):
                 if kgs_username is not None or ogs_username is not None:
                     message += ':'
                     if ogs_username is not None:
-                        message += ' OGS - ' + ogs_username + ' (' + ogs_rank + ') |'
+                        message += ' OGS | ' + ogs_username + ' (' + ogs_rank + ') -'
                     if kgs_username is not None:
-                        message += ' KGS - ' + kgs_username + ' (' + kgs_rank + ')'
+                        message += ' KGS | ' + kgs_username + ' (' + kgs_rank + ')'
             message += ' \n'
         await ctx.send(message)
     else:
         await ctx.send(ctx.message.author.mention + ": Nobody is " + role_dict['verbose'] + ". :(")
 
-@bot.command(pass_context=True, aliases=["whos_lfg"])
+@bot.command(pass_context=True, aliases=["whos_lfg", "whos_go"])
 async def whos_LFG(ctx):
-    if any(item == str(ctx.message.channel) for item in lfgChannels):
-        currently_looking = []
-        role = discord.utils.get(ctx.message.guild.roles, name="LFG")
-        for member in ctx.message.guild.members:
-            if role in member.roles and str(member.status) == "online":
-                currently_looking.append(member)
-        if len(currently_looking) > 0:
-            uids = [member.id for member in currently_looking]
-            infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
-            message = ctx.message.author.mention + ": The following users are looking for a game:\n"
-            for user in currently_looking:
-                message += '**' + user.name + '**'
-                info = infos.get(str(user.id))
-                if info is not None:
-                    kgs_username = info.get('kgs_username')
-                    kgs_rank = info.get('kgs_rank')
-                    ogs_username = info.get('ogs_username')
-                    ogs_rank = info.get('ogs_rank')
-                    if kgs_username is not None or ogs_username is not None:
-                        message += ':'
-                        if ogs_username is not None:
-                            message += ' OGS | ' + ogs_username + ' (' + ogs_rank + ') -'
-                        if kgs_username is not None:
-                            message += ' KGS | ' + kgs_username + ' (' + kgs_rank + ')'
-                message += ' \n'
-            await ctx.send(message)
-        else:
-            await ctx.send(ctx.message.author.mention + ": Nobody is looking for a game. :(")
+    role_dict = roles_dict['go']
+
+    if str(ctx.message.channel) not in role_dict['allowed_channels']:
+        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command:"
+        message += ' '.join(role_dict['allowed_channels'])
+        await ctx.send(message)
+        return
+
+    role = discord.utils.get(ctx.message.guild.roles, id=role_dict['id'])
+
+    currently_looking = []
+    role = discord.utils.get(ctx.message.guild.roles, name="LFG")
+    currently_looking = [x for x in role.members if str(x.status) == "online"]
+
+    if len(currently_looking) > 0:
+        uids = [member.id for member in currently_looking]
+        infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
+        message = ctx.message.author.mention + ": The following users are looking for a game:\n"
+        for user in currently_looking:
+            message += '**' + user.name + '**'
+            info = infos.get(str(user.id))
+            if info is not None:
+                kgs_username = info.get('kgs_username')
+                kgs_rank = info.get('kgs_rank')
+                ogs_username = info.get('ogs_username')
+                ogs_rank = info.get('ogs_rank')
+                if kgs_username is not None or ogs_username is not None:
+                    message += ':'
+                    if ogs_username is not None:
+                        message += ' OGS | ' + ogs_username + ' (' + ogs_rank + ') -'
+                    if kgs_username is not None:
+                        message += ' KGS | ' + kgs_username + ' (' + kgs_rank + ')'
+            message += ' \n'
+        await ctx.send(message)
     else:
-        await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channels for this command.")
+        await ctx.send(ctx.message.author.mention + ": Nobody is looking for a game. :(")
+else:
+    await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channels for this command.")
 
 
 @bot.command(pass_context=True)
 async def info(ctx):
-    embed = discord.Embed(title="Looking For Game Bot", description="Keeps track of who is currently looking for a game.", color=0xeee657)
+    embed = discord.Embed(title="OSR bot", description="Keeps track of who is currently looking for a game.", color=0xeee657)
     await ctx.send(embed=embed)
 
 bot.remove_command('help')
@@ -238,9 +263,9 @@ bot.remove_command('help')
 @bot.command(pass_context=True)
 async def help(ctx):
     embed = discord.Embed(title="Looking For Game (LFG) Bot", description="Keeps track of who is currently looking for a game. The following commands are available:", color=0xeee657)
-    embed.add_field(name="!go [minutes]", value="Toggles your role for LFG. You can limit the length of time you will be LFG by entering a number of minutes after the command.", inline=False)
-    embed.add_field(name="!nogo", value="Removes the user from the LFG group.", inline=False)
-    embed.add_field(name="!whos_LFG", value="Tells you who is currently looking.", inline=False)
+    embed.add_field(name="!go [minutes]", value="Toggles your role for go. You can limit the length of time you will be LFG by entering a number of minutes after the command.", inline=False)
+    embed.add_field(name="!no go", value="Removes the user from the LFG group.", inline=False)
+    embed.add_field(name="!whos go", value="Tells you who is currently looking.", inline=False)
     embed.add_field(name="!info", value="Gives a little info about the bot.", inline=False)
     embed.add_field(name="!help", value="Gives this message.", inline=False)
     await ctx.send(embed=embed)
@@ -249,10 +274,10 @@ async def help(ctx):
 async def check_LFG():
     await bot.wait_until_ready()
     while not bot.is_closed:
+        role = discord.utils.get(ctx.message.guild.roles, id=role_dict['go']['id'])
         for uid, expiration_time in expiration_times.items():
             if datetime.now() > expiration_time:
                 await discord.utils.get(bot.get_all_members(), id=uid).remove_roles(role)
-
         await asyncio.sleep(60)
 
 bot.loop.create_task(check_LFG())
