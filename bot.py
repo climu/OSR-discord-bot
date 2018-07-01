@@ -145,10 +145,6 @@ async def info(ctx):
 
 bot.remove_command('help')
 
-@bot.command(pass_context=True)
-async def testing(ctx):
-    r = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
-    print(r)
 
 @bot.command(pass_context=True)
 async def help(ctx):
