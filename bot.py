@@ -99,12 +99,12 @@ async def go(ctx, minutes=minutes_in_a_day):
     if any(item == str(ctx.message.channel) for item in lfgChannels):
         if role in ctx.message.author.roles:
             await ctx.message.author.remove_roles(role)
-            await ctx.send(str(ctx.message.author.name) + " is no longer looking for a game.")
+            await ctx.send(ctx.message.author.mention + " is no longer looking for a game.")
         else:
             expiration_time = datetime.now() + timedelta(minutes=minutes)
             expiration_times[ctx.author.id] = expiration_time
             await ctx.message.author.add_roles(role)
-            await ctx.send("Hey, <@&" + str(id["LFG"]) + ">! " + str(ctx.message.author.name) + " is looking for a game.")
+            await ctx.send("Hey, <@&" + str(id["LFG"]) + ">! " + ctx.message.author.mention + " is looking for a game.")
     else:
         await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channels for this command.")
 
@@ -114,7 +114,7 @@ async def nogo(ctx):
     if any(item == str(ctx.message.channel) for item in lfgChannels):
         if role in ctx.message.author.roles:
             await ctx.message.author.remove_roles(role)
-            await ctx.send(str(ctx.message.author.name) + " is no longer looking for a game.")
+            await ctx.send(ctx.message.author.mention + " is no longer looking for a game.")
     else:
         await ctx.send("Please " + ctx.message.author.mention + ", use the appropriate channels for this command.")
 
