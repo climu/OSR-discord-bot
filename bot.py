@@ -297,7 +297,8 @@ async def whos_LFG(ctx):
 
 @bot.command(pass_context=True)
 async def info(ctx):
-    embed = discord.Embed(title="OSR bot", description="Keeps track of who is currently looking for a game.", color=0xeee657)
+    desc = "Keeps track of who is currently looking for a game.\nhttps://github.com/climu/OSR-discord-bot"
+    embed = discord.Embed(title="OSR bot", description=desc, color=0xeee657)
     await ctx.send(embed=embed)
 
 bot.remove_command('help')
