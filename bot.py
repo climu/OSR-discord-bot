@@ -19,7 +19,7 @@ roles_dict = {
     'tsumego': {
         "id": 462186851747233793,
         "allowed_channels": ["general", "tsumego", "tsumego_hint", "tsumego_solutions", "bot-commands"],
-        "verbose": 'interested in tsumegos'
+        "verbose": "interested in tsumegos"
     },
     'review': {
         "id": 462187005602955266,
@@ -39,7 +39,7 @@ roles_dict = {
     'ddk': {
         "id": 462186975240388620,
         "allowed_channels": ["general", "game_discussion", "bot-commands"],
-        "verbose": "doublle digit kyu player",
+        "verbose": "double digit kyu player",
     },
 }
 
@@ -81,14 +81,14 @@ async def get_roles():
 async def add_role(ctx, role_name):
     role_dict = roles_dict[role_name]
     if str(ctx.message.channel) not in role_dict['allowed_channels']:
-        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command:"
+        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command: "
         message += ' '.join(role_dict['allowed_channels'])
         await ctx.send(message)
         return
 
     role = role_dict["role"]
     if role in ctx.message.author.roles:
-        await ctx.send(ctx.message.author.mention + "Hey, is still " + role_dict["verbose"] + ".")
+        await ctx.send("Hey, " + ctx.message.author.mention + " is still " + role_dict["verbose"] + ".")
     else:
         await ctx.message.author.add_roles(role)
         await ctx.send("Hey, " + ctx.message.author.mention + " is " + role_dict["verbose"] + ".")
@@ -147,7 +147,7 @@ async def go(ctx, minutes=minutes_in_a_day):
     role_dict = roles_dict['go']
 
     if str(ctx.message.channel) not in role_dict['allowed_channels']:
-        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command:"
+        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command: "
         message += ' '.join(role_dict['allowed_channels'])
         await ctx.send(message)
         return
@@ -157,7 +157,7 @@ async def go(ctx, minutes=minutes_in_a_day):
     expiration_time = datetime.now() + timedelta(minutes=minutes)
     expiration_times[ctx.author.id] = expiration_time
     if role in ctx.message.author.roles:
-        await ctx.send(ctx.message.author.mention + "Hey, <@&" + str(role_dict["id"]) + ">! is still looking for a game.")
+        await ctx.send("Hey, <@&" + str(role_dict["id"]) + ">! " + ctx.message.author.mention + " is desperately looking for a game.")
     else:
         await ctx.message.author.add_roles(role)
         await ctx.send("Hey, <@&" + str(role_dict["id"]) + ">! " + ctx.message.author.mention + " is looking for a game.")
@@ -192,14 +192,14 @@ async def no(ctx, role_name):
     if role_dict is None:
         return
     if str(ctx.message.channel) not in role_dict['allowed_channels']:
-        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command:"
+        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command: "
         message += ' '.join(role_dict['allowed_channels'])
         await ctx.send(message)
         return
     role = role_dict["role"]
 
     await ctx.message.author.remove_roles(role)
-    await ctx.send(str(ctx.message.author.name) + " is no longer " + role_dict["verbose"] + ".")
+    await ctx.send(ctx.message.author.mention + " is no longer " + role_dict["verbose"] + ".")
 
 
 @bot.command(pass_context=True, aliases=["no_lfg", "no_game", "remove_lfg", "no_play"])
@@ -207,7 +207,7 @@ async def no_go(ctx, minutes=minutes_in_a_day):
     role_dict = roles_dict['go']
 
     if str(ctx.message.channel) not in role_dict['allowed_channels']:
-        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command:"
+        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command: "
         message += ' '.join(role_dict['allowed_channels'])
         await ctx.send(message)
         return
@@ -226,7 +226,7 @@ async def whos(ctx, role_name):
     if role_dict is None:
         return
     if str(ctx.message.channel) not in role_dict['allowed_channels']:
-        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command:"
+        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command: "
         message += ' '.join(role_dict['allowed_channels'])
         await ctx.send(message)
         return
@@ -254,14 +254,14 @@ async def whos(ctx, role_name):
             message += ' \n'
         await ctx.send(message)
     else:
-        await ctx.send(ctx.message.author.mention + ": Nobody is " + role_dict['verbose'] + ". :(")
+        await ctx.send("Sorry " + ctx.message.author.mention + ". Unfortunately, nobody is " + role_dict['verbose'] + " right now. :(")
 
 @bot.command(pass_context=True, aliases=["whos_lfg", "whos_go"])
 async def whos_LFG(ctx):
     role_dict = roles_dict['go']
 
     if str(ctx.message.channel) not in role_dict['allowed_channels']:
-        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command:"
+        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command: "
         message += ' '.join(role_dict['allowed_channels'])
         await ctx.send(message)
         return
@@ -291,7 +291,7 @@ async def whos_LFG(ctx):
             message += ' \n'
         await ctx.send(message)
     else:
-        await ctx.send(ctx.message.author.mention + ": Nobody is looking for a game. :(")
+        await ctx.send("Sorry " + ctx.message.author.mention + ". Unfortunately, nobody is looking for a game right now. :(")
 
 
 
