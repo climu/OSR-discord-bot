@@ -64,7 +64,12 @@ del_commands = [
     "no go",
     "no",
     "whos go",
-    "whos_go"
+    "whos_go",
+    "cho",
+    "cho_hug",
+    "chang_ho",
+    "yuta",
+    "kj_facepalm"
 ]
 
 # LFG related commands can only be called in the channels below

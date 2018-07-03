@@ -37,35 +37,40 @@ async def on_message(message):
 
 @bot.command(pass_context=True)
 async def cho(ctx):
-    embed = discord.Embed()
+    embed = discord.Embed(description="Requested by: " + ctx.author.mention)
+    embed.set_thumbnail(url=ctx.author.avatar_url)
     embed.set_image(url="https://cdn.discordapp.com/attachments/456532168370290695/461802038276390923/cho.png")
     await ctx.send(embed=embed)
 
 
 @bot.command(pass_context=True)
 async def cho_hug(ctx):
-    embed = discord.Embed()
+    embed = discord.Embed(description="Requested by: " + ctx.author.mention)
+    embed.set_thumbnail(url=ctx.author.avatar_url)
     embed.set_image(url="https://cdn.discordapp.com/attachments/430062036903395329/444192620504416268/WroCzKKKj7o.png")
     await ctx.send(embed=embed)
 
 
 @bot.command(pass_context=True)
 async def chang_ho(ctx):
-    embed = discord.Embed()
+    embed = discord.Embed(description="Requested by: " + ctx.author.mention)
+    embed.set_thumbnail(url=ctx.author.avatar_url)
     embed.set_image(url="https://cdn.discordapp.com/attachments/430062036903395329/432619582054858806/153746110828-nong01.png")
     await ctx.send(embed=embed)
 
 
 @bot.command(pass_context=True)
 async def yuta(ctx):
-    embed = discord.Embed()
+    embed = discord.Embed(description="Requested by: " + ctx.author.mention)
+    embed.set_thumbnail(url=ctx.author.avatar_url)
     embed.set_image(url="https://cdn.discordapp.com/attachments/430062036903395329/432619582054858806/153746110828-nong01.png")
     await ctx.send(embed=embed)
 
 
 @bot.command(pass_context=True)
 async def kj_facepalm(ctx):
-    embed = discord.Embed()
+    embed = discord.Embed(description="Requested by: " + ctx.author.mention)
+    embed.set_thumbnail(url=ctx.author.avatar_url)
     embed.set_image(url="https://cdn.discordapp.com/attachments/366870031285616651/461813881900236821/iozlnkjg.png")
     await ctx.send(embed=embed)
 
@@ -147,7 +152,7 @@ async def who(ctx, username):
     if user is not None:
         infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
         if not infos:
-            message = user.mention + ' was to lazy to link his OSR account with his discord. He/she just have to folow this [link](https://openstudyroom.org/discord/)!'
+            message = user.mention + ' was too lazy to link their OSR account with their discord. They just have to folow this [link](https://openstudyroom.org/discord/)!'
             embed = discord.Embed(title="Lazy " + user.name, description=message, color=0xeee657)
             await ctx.send(embed=embed)
         else:
