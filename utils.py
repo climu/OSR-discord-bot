@@ -15,3 +15,21 @@ async def add_role(ctx, role_name):
     else:
         await ctx.message.author.add_roles(role)
         await ctx.send("Hey, " + ctx.message.author.mention + " is " + role_dict["verbose"] + ".")
+
+def user_info_message(user, infos):
+    message = '**' + user.name + '**'
+    info = infos.get(str(user.id))
+    if info is not None:
+        kgs_username = info.get('kgs_username')
+        kgs_rank = info.get('kgs_rank')
+        ogs_username = info.get('ogs_username')
+        ogs_rank = info.get('ogs_rank')
+        if kgs_username is not None or ogs_username is not None:
+            message += ':'
+            servers = []
+            if ogs_username is not None:
+                servers.append(' OGS | ' + ogs_username + ' (' + ogs_rank + ')')
+            if kgs_username is not None:
+                servers.append(' KGS | ' + kgs_username + ' (' + kgs_rank + ')')
+    message += ' - '.join(servers) + '\n'
+    return message
