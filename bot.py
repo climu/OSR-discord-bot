@@ -7,67 +7,10 @@ from datetime import timedelta
 import asyncio
 import requests
 
-bot = commands.Bot(command_prefix='!')
-guild_id = 287487891003932672
+from config import roles_dict, del_commands, minutes_in_a_day, guild_id, expiration_times, prefix
+from utils import add_role
 
-roles_dict = {
-    'go': {
-        "id": 433023079183286282,
-        "allowed_channels": ["game-request", "bot-commands"],
-        "verbose": "looking for a game"
-    },
-    'tsumego': {
-        "id": 462186851747233793,
-        "allowed_channels": ["general", "tsumego", "tsumego_hint", "tsumego_solutions", "bot-commands"],
-        "verbose": "interested in tsumegos"
-    },
-    'review': {
-        "id": 462187005602955266,
-        "allowed_channels": ["general", "game_discussion", "bot-commands"],
-        "verbose": "interested in game reviews",
-    },
-    'dan': {
-        "id": 462186943221071872,
-        "allowed_channels": ["general", "game_discussion", "bot-commands"],
-        "verbose": "dan player",
-    },
-    'sdk': {
-        "id": 462186975240388620,
-        "allowed_channels": ["general", "game_discussion", "bot-commands"],
-        "verbose": "single digit kyu player",
-    },
-    'ddk': {
-        "id": 462186975240388620,
-        "allowed_channels": ["general", "game_discussion", "bot-commands"],
-        "verbose": "double digit kyu player",
-    },
-}
-
-
-# For the following commands, the calling message will be deleted
-del_commands = [
-    "whos_lfg",
-    "whos_LFG",
-    "lfg",
-    "game",
-    "LFG",
-    "no_LFG",
-    "no_lfg",
-    "no_game",
-    "go",
-    "nogo",
-    "GO",
-    "NOGO"
-]
-
-# LFG related commands can only be called in the channels below
-lfgChannels = [
-    "game_request",
-    "bot_commands"
-]
-
-minutes_in_a_day = 1440
-expiration_times = {}
+bot = commands.Bot(command_prefix=prefix)
 roles_are_set = False
 
 async def get_roles():
@@ -95,7 +38,7 @@ async def add_role(ctx, role_name):
 
 @bot.event
 async def on_message(message):
-    if any("!" + item == message.content for item in del_commands):
+    if prefix + message.content in del_commands:
         await message.delete()
     try:
         await bot.process_commands(message)
