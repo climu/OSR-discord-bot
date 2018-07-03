@@ -10,7 +10,8 @@ async def add_role(ctx, role_name):
 
     role = role_dict["role"]
     if role in ctx.message.author.roles:
-        await ctx.send(ctx.message.author.mention + "Hey, is still " + role_dict["verbose"] + ".")
+        await ctx.send("Hey, " + ctx.message.author.mention + " is still " +
+                       role_dict["verbose"] + ".")
     else:
         await ctx.message.author.add_roles(role)
         await ctx.send("Hey, " + ctx.message.author.mention + " is " + role_dict["verbose"] + ".")
