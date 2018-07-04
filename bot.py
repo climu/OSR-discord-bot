@@ -25,7 +25,7 @@ async def get_roles():
 
 @bot.event
 async def on_message(message):
-    if prefix + message.content in del_commands:
+    if message.content in del_commands:
         await message.delete()
     try:
         await bot.process_commands(message)
