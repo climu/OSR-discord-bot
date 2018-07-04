@@ -37,35 +37,40 @@ async def on_message(message):
 
 @bot.command(pass_context=True)
 async def cho(ctx):
-    embed = discord.Embed()
+    embed = discord.Embed(description="Requested by: " + ctx.author.mention)
+    embed.set_thumbnail(url=ctx.author.avatar_url)
     embed.set_image(url="https://cdn.discordapp.com/attachments/456532168370290695/461802038276390923/cho.png")
     await ctx.send(embed=embed)
 
 
 @bot.command(pass_context=True)
 async def cho_hug(ctx):
-    embed = discord.Embed()
+    embed = discord.Embed(description="Requested by: " + ctx.author.mention)
+    embed.set_thumbnail(url=ctx.author.avatar_url)
     embed.set_image(url="https://cdn.discordapp.com/attachments/430062036903395329/444192620504416268/WroCzKKKj7o.png")
     await ctx.send(embed=embed)
 
 
 @bot.command(pass_context=True)
 async def chang_ho(ctx):
-    embed = discord.Embed()
+    embed = discord.Embed(description="Requested by: " + ctx.author.mention)
+    embed.set_thumbnail(url=ctx.author.avatar_url)
     embed.set_image(url="https://cdn.discordapp.com/attachments/430062036903395329/432619582054858806/153746110828-nong01.png")
     await ctx.send(embed=embed)
 
 
 @bot.command(pass_context=True)
 async def yuta(ctx):
-    embed = discord.Embed()
+    embed = discord.Embed(description="Requested by: " + ctx.author.mention)
+    embed.set_thumbnail(url=ctx.author.avatar_url)
     embed.set_image(url="https://cdn.discordapp.com/attachments/430062036903395329/432619582054858806/153746110828-nong01.png")
     await ctx.send(embed=embed)
 
 
 @bot.command(pass_context=True)
 async def kj_facepalm(ctx):
-    embed = discord.Embed()
+    embed = discord.Embed(description="Requested by: " + ctx.author.mention)
+    embed.set_thumbnail(url=ctx.author.avatar_url)
     embed.set_image(url="https://cdn.discordapp.com/attachments/366870031285616651/461813881900236821/iozlnkjg.png")
     await ctx.send(embed=embed)
 
@@ -147,7 +152,7 @@ async def who(ctx, username):
     if user is not None:
         infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
         if not infos:
-            message = user.mention + ' was to lazy to link his OSR account with his discord. He/she just have to folow this [link](https://openstudyroom.org/discord/)!'
+            message = user.mention + ' was too lazy to link their OSR account with their discord. They just have to folow this [link](https://openstudyroom.org/discord/)!'
             embed = discord.Embed(title="Lazy " + user.name, description=message, color=0xeee657)
             await ctx.send(embed=embed)
         else:
@@ -194,14 +199,14 @@ bot.remove_command('help')
 async def help(ctx):
     desc = "Help organise this discord channel. The following commands are available:"
     embed = discord.Embed(title="OSR Bot", description=desc, color=0xeee657)
-    value = "To avoid using `@here`, user can choose to be in groups of interest:\n\n"
-    value += "- **!go**: will add you the ``@player` role. This is for people who are interested in playing OSR games. User will tag `@player` when they are looking for a game.\n\n"
-    value += "- **!tsumego**: will add you the `@tsumegoer` role. This is for people who are interested in tsumego study. User will tag `@tsumegoer` when they post new tsumego or have a related question.\n\n"
-    value += "- **!review**: will add you the `@reviewer` role. This is for people who are interested game reviews. User will tag `@reviewer` when they ask for a game review.\n\n"
-    value += "- **!dan/sdk/ddk**: will add you the `@dan`, `@sdk` or `@ddk` role. By saying your approximate level, it will allow users to tag the appropriate group when looking for game or help.\n\n"
+    value = "To avoid using `@here`, users can choose to be in groups of interest:\n\n"
+    value += "- **!go**: will assign you the ``@player` role. This is for people who are interested in playing OSR games. Tag `@player` when you are looking for a game.\n\n"
+    value += "- **!tsumego**: will assign you the `@tsumegoer` role. This is for people who are interested in tsumego study. Tag `@tsumegoer` when you post a new tsumego or have a related question.\n\n"
+    value += "- **!review**: will assign you the `@reviewer` role. This is for people who are available to give game reviews. Tag `@reviewer` to ask for a game review.\n\n"
+    value += "- **!dan/sdk/ddk**: will assign you the `@dan`, `@sdk` or `@ddk` role. By saying your approximate level, it will allow users to tag the appropriate group when lookinSg for game or help. Feel free to sign up to more than one groups.\n\n"
     embed.add_field(name="Add a role", value=value, inline=False)
-    embed.add_field(name="Remove a role", value="**!no [role]**: will remove you the role. For instance `!no go` will remove you from the `@player` role", inline=False)
-    embed.add_field(name="List all online users in with a role", value="**!list [role]**: will list all online users with the said role. For instance `!list tsumego` will list all online user of the `@tsumego` role.", inline=False)
+    embed.add_field(name="Remove a role", value="**!no [role]**: will remove the role. For instance, `!no go` will remove you from the `@player` role", inline=False)
+    embed.add_field(name="List all online users in with a specific role", value="**!list [role]**: will list all online users with the said role. For instance `!list tsumego` will list all online users of the `@tsumego` role.", inline=False)
     embed.add_field(name="Get one user info", value="**!who [username or #discriminator]**: will give informations about a user given his nickname or discriminator. For instance, my discriminator is `#9501`.", inline=False)
     embed.add_field(name="!info", value="Gives a little info about the bot.", inline=False)
     embed.add_field(name="!help", value="Gives this message.", inline=False)

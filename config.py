@@ -10,7 +10,7 @@ roles_dict = {
     'tsumego': {
         "id": 462186851747233793,
         "allowed_channels": ["general", "tsumego", "tsumego_hint", "tsumego_solutions", "bot-commands", "testing-bots"],
-        "verbose": 'interested in tsumegos'
+        "verbose": "interested in tsumegos"
     },
     'review': {
         "id": 462187005602955266,
@@ -30,7 +30,7 @@ roles_dict = {
     'ddk': {
         "id": 462186975240388620,
         "allowed_channels": ["general", "game_discussion", "bot-commands", "testing-bots"],
-        "verbose": "doublle digit kyu player",
+        "verbose": "double digit kyu player",
     },
 }
 
@@ -55,7 +55,21 @@ del_commands = [
     "go",
     "nogo",
     "GO",
-    "NOGO"
+    "NOGO",
+    "tsumego",
+    "review",
+    "ddk",
+    "sdk",
+    "dan",
+    "no go",
+    "no",
+    "whos go",
+    "whos_go",
+    "cho",
+    "cho_hug",
+    "chang_ho",
+    "yuta",
+    "kj_facepalm"
 ]
 
 # LFG related commands can only be called in the channels below
