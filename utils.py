@@ -49,3 +49,13 @@ def user_rank(user, infos):
         message += ' - '.join(servers)
         message = '({0})'.format(message)
     return message
+
+def get_user(username):
+    role = discord.utils.get(bot.get_guild(guild_id).roles, id=287489624014585866)
+    if username[0] == "#":
+        user = discord.utils.get(role.members, discriminator=str(username[1:]))
+    else:
+        user = discord.utils.get(role.members, display_name=username)
+    if user is None:
+        user = discord.utils.get(role.members, name=username)
+    return user
