@@ -22,6 +22,13 @@ async def get_roles():
         roles_are_set = True
 
 
+@bot.event
+async def on_ready():
+    """Display a message for which time was bot last updated."""
+    channel = bot.get_channel(463639475751354368)
+    msg = "<@" + str(461792018843172866) + "> was just deployed."
+    await channel.send(msg)
+    
 
 @bot.event
 async def on_message(message):

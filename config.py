@@ -28,7 +28,7 @@ roles_dict = {
         "verbose": "single digit kyu player",
     },
     'ddk': {
-        "id": 462186975240388620,
+        "id": 462187620156309514,
         "allowed_channels": ["general", "game_discussion", "bot-commands", "testing-bots"],
         "verbose": "double digit kyu player",
     },
