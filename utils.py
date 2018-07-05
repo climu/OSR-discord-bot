@@ -34,3 +34,29 @@ def user_info_message(user, infos):
         message += ' - '.join(servers)
     message += '\n'
     return message
+
+def user_rank(user, infos):
+    message = ''
+    info = infos.get(str(user.id))
+    if info is not None:
+        kgs_rank = info.get('kgs_rank')
+        ogs_rank = info.get('ogs_rank')
+        servers = []
+        if kgs_username is not None or ogs_username is not None:
+            if ogs_username is not None:
+                servers.append('OGS: ' + ogs_rank + ')')
+            if kgs_username is not None:
+                servers.append('KGS: ' + kgs_rank + ')')
+        message += ' - '.join(servers)
+        message = '({0})'.format(message)
+    return message
+
+def get_user(username):
+    role = discord.utils.get(bot.get_guild(guild_id).roles, id=287489624014585866)
+    if username[0] == "#":
+        user = discord.utils.get(role.members, discriminator=str(username[1:]))
+    else:
+        user = discord.utils.get(role.members, display_name=username)
+    if user is None:
+        user = discord.utils.get(role.members, name=username)
+    return user

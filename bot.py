@@ -95,14 +95,15 @@ async def go(ctx, minutes=minutes_in_a_day):
         return
 
     role = role_dict["role"]
-
+    user = get_user(ctx.message.author)
+    infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
     expiration_time = datetime.now() + timedelta(minutes=minutes)
     expiration_times[ctx.author.id] = expiration_time
     if role in ctx.message.author.roles:
-        await ctx.send("Hey, <@&" + str(role_dict["id"]) + ">! " + ctx.message.author.mention + " is desperately looking for a game.")
+        await ctx.send("Hey, <@&" + str(role_dict["id"]) + ">! " + ctx.message.author.mention + user_rank(user, infos) + " is desperately looking for a game.")
     else:
         await ctx.message.author.add_roles(role)
-        await ctx.send("Hey, <@&" + str(role_dict["id"]) + ">! " + ctx.message.author.mention + " is looking for a game.")
+        await ctx.send("Hey, <@&" + str(role_dict["id"]) + ">! " + ctx.message.author.mention + user_rank(user, infos) + " is looking for a game.")
 
 
 @bot.command(pass_context=True)
@@ -148,14 +149,7 @@ async def no(ctx, role_name):
 
 @bot.command(pass_context=True, aliases=["user"])
 async def who(ctx, username):
-    role = discord.utils.get(bot.get_guild(guild_id).roles, id=287489624014585866)
-    if username[0] == "#":
-        user = discord.utils.get(role.members, discriminator=str(username[1:]))
-    else:
-        user = discord.utils.get(role.members, display_name=username)
-    if user is None:
-        user = discord.utils.get(role.members, name=username)
-
+    user = get_user(username)
     if user is not None:
         infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
         if not infos:
