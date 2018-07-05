@@ -8,7 +8,7 @@ import asyncio
 import requests
 
 from config import roles_dict, del_commands, minutes_in_a_day, guild_id, expiration_times, prefix
-from utils import add_role, user_info_message
+from utils import *
 
 bot = commands.Bot(command_prefix=prefix)
 roles_are_set = False
@@ -28,7 +28,7 @@ async def on_ready():
     channel = bot.get_channel(463639475751354368)
     msg = "<@" + str(461792018843172866) + "> was just deployed."
     await channel.send(msg)
-    
+
 
 @bot.event
 async def on_message(message):
@@ -95,7 +95,8 @@ async def go(ctx, minutes=minutes_in_a_day):
         return
 
     role = role_dict["role"]
-    user = get_user(ctx.message.author)
+    #no need to call get_user here because ctx.message.author is already a member instance
+    user = ctx.message.author
     infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
     expiration_time = datetime.now() + timedelta(minutes=minutes)
     expiration_times[ctx.author.id] = expiration_time
@@ -149,7 +150,7 @@ async def no(ctx, role_name):
 
 @bot.command(pass_context=True, aliases=["user"])
 async def who(ctx, username):
-    user = get_user(username)
+    user = get_user(username, bot)
     if user is not None:
         infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
         if not infos:
@@ -179,7 +180,6 @@ async def whos(ctx, role_name):
     if len(users) > 0:
         uids = [member.id for member in users]
         infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
-        print(infos)
         message = ctx.message.author.mention + ": The following users are " + role_dict['verbose'] + ":\n"
         for user in users:
             message += user_info_message(user, infos)
