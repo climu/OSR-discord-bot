@@ -3,7 +3,7 @@ from config import roles_dict
 async def add_role(ctx, role_name):
     role_dict = roles_dict[role_name]
     if str(ctx.message.channel) not in role_dict['allowed_channels']:
-        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command:"
+        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command: "
         message += ' '.join(role_dict['allowed_channels'])
         await ctx.send(message)
         return
