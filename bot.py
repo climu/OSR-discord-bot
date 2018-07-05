@@ -32,12 +32,15 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    if message.content in del_commands:
+    cmd = message.content[1:].split(" ")[0]
+    if message.content.startswith(prefix) and cmd in del_commands:
         await message.delete()
     try:
         await bot.process_commands(message)
-    except "NOT FOUND":
+    except commands.CommandNotFound:
         pass
+
+
 
 # Here are the pictures commands. That's just for fun.
 
