@@ -31,5 +31,6 @@ def user_info_message(user, infos):
                 servers.append(' OGS | ' + ogs_username + ' (' + ogs_rank + ')')
             if kgs_username is not None:
                 servers.append(' KGS | ' + kgs_username + ' (' + kgs_rank + ')')
-        message += ' - '.join(servers) + '\n'
+        message += ' - '.join(servers)
+    message += '\n'
     return message
