@@ -229,7 +229,7 @@ async def check_LFG():
 
         for uid in to_clear:
             del expiration_times[uid]
-        await asyncio.sleep(5)
+        await asyncio.sleep(60)
 
 bot.loop.create_task(check_LFG())
 bot.run(os.environ["LFG_TOKEN"])
