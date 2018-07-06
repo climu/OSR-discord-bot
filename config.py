@@ -62,7 +62,9 @@ del_commands = [
     "cho_hug",
     "chang_ho",
     "yuta",
-    "kj_facepalm"
+    "kj_facepalm",
+    "info",
+    "help"
 ]
 
 # LFG related commands can only be called in the channels below
