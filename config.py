@@ -55,6 +55,7 @@ del_commands = [
     "sdk",
     "dan",
     "no",
+    "who",
     "whos",
     "list",
     "cho",
