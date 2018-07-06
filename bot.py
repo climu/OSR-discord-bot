@@ -220,12 +220,16 @@ async def help(ctx):
 async def check_LFG():
     await bot.wait_until_ready()
     await get_roles()
-    while not bot.is_closed:
-        role = discord.utils.get(ctx.message.guild.roles, id=roles_dict['go']['id'])
+    while not bot.is_closed():
+        to_clear = []
         for uid, expiration_time in expiration_times.items():
             if datetime.now() > expiration_time:
-                await discord.utils.get(bot.get_all_members(), id=uid).remove_roles(role)
-        await asyncio.sleep(60)
+                to_clear.append(uid)
+                await discord.utils.get(bot.get_all_members(), id=uid).remove_roles(roles_dict['go']['role'])
+
+        for uid in to_clear:
+            del expiration_times[uid]
+        await asyncio.sleep(5)
 
 bot.loop.create_task(check_LFG())
 bot.run(os.environ["LFG_TOKEN"])
