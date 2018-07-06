@@ -33,7 +33,8 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     cmd = message.content[1:].split(" ")[0]
-    if message.content.startswith(prefix) and cmd in del_commands:
+    channel = str(message.channel).split(" ")[0]
+    if message.content.startswith(prefix) and cmd in del_commands and channel != "Direct":
         await message.delete()
     try:
         await bot.process_commands(message)
