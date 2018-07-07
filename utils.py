@@ -46,11 +46,11 @@ def user_rank(user, infos):
         servers = []
         if kgs_rank is not None or ogs_rank is not None:
             if ogs_rank is not None:
-                servers.append('OGS: ' + ogs_rank + ')')
+                servers.append('OGS: ' + ogs_rank )
             if kgs_rank is not None:
-                servers.append('KGS: ' + kgs_rank + ')')
-        message += ' - '.join(servers)
-        message = '({0})'.format(message)
+                servers.append('KGS: ' + kgs_rank )
+            message += ' - '.join(servers)
+            message = '({0})'.format(message)
     return message
 
 def get_user(username, bot):

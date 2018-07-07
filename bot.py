@@ -104,10 +104,10 @@ async def go(ctx, minutes=minutes_in_a_day):
     expiration_time = datetime.now() + timedelta(minutes=minutes)
     expiration_times[ctx.author.id] = expiration_time
     if role in ctx.message.author.roles:
-        await ctx.send("Hey, <@&" + str(role_dict["id"]) + ">! " + ctx.message.author.mention + user_rank(user, infos) + " is desperately looking for a game.")
+        await ctx.send("Hey, <@&" + str(role_dict["id"]) + ">! " + ctx.message.author.mention + ' ' + user_rank(user, infos) + " is desperately looking for a game.")
     else:
         await ctx.message.author.add_roles(role)
-        await ctx.send("Hey, <@&" + str(role_dict["id"]) + ">! " + ctx.message.author.mention + user_rank(user, infos) + " is looking for a game.")
+        await ctx.send("Hey, <@&" + str(role_dict["id"]) + ">! " + ctx.message.author.mention + ' ' + user_rank(user, infos) + " is looking for a game.")
 
 
 @bot.command(pass_context=True)
@@ -157,7 +157,7 @@ async def who(ctx, username):
     if user is not None:
         infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
         if not infos:
-            message = user.mention + ' was too lazy to link their OSR account with their discord. They just have to folow this [link](https://openstudyroom.org/discord/)!'
+            message = user.mention + ' was too lazy to link their OSR account with their discord. They just have to follow this [link](https://openstudyroom.org/discord/)!'
             embed = discord.Embed(title="Lazy " + user.name, description=message, color=0xeee657)
             await ctx.send(embed=embed)
         else:
