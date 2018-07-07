@@ -39,7 +39,11 @@ async def on_message(message):
     try:
         await bot.process_commands(message)
     except commands.CommandNotFound:
-        pass
+        await message.delete()
+        desc = "I am not currently programmed for the command: **" + subject + "**"
+        embed = discord.Embed(title="Command **" + subject + "** not found.", description=desc, color=0xeee657)
+        embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
+        await bot.send(embed=embed)
 
 
 
