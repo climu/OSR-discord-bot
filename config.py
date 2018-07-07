@@ -67,11 +67,5 @@ del_commands = [
     "help"
 ]
 
-# LFG related commands can only be called in the channels below
-lfgChannels = [
-    "game_request",
-    "bot_commands"
-]
-
 minutes_in_a_day = 1440
 expiration_times = {}
