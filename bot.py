@@ -164,7 +164,15 @@ async def who(ctx, username):
             message = user_info_message(user, infos)
             await ctx.send(message)
     else:
-        await ctx.send("We have no such user in here. Sorry.")
+        message = ctx.message.author.mention + ": We have no OSR member with the "
+        if username.startswith("#"):
+            message += "discriminator "
+        else:
+            message += "username "
+        message += "`" + username + "`. Sorry."
+        if username in roles_dict:
+            message += "\n\n However, `" + username + "` is a valid role. Did you mean `!list " + username + "`?"
+        await ctx.send(message)
 
 
 @bot.command(pass_context=True, aliases=["list"])
