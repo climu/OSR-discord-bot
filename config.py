@@ -64,13 +64,8 @@ del_commands = [
     "yuta",
     "kj_facepalm",
     "info",
-    "help"
-]
-
-# LFG related commands can only be called in the channels below
-lfgChannels = [
-    "game_request",
-    "bot_commands"
+    "help",
+    "league"
 ]
 
 minutes_in_a_day = 1440

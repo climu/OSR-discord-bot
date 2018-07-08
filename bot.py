@@ -33,12 +33,17 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     cmd = message.content[1:].split(" ")[0]
-    if message.content.startswith(prefix) and cmd in del_commands:
+    channel = str(message.channel).split(" ")[0]
+    if message.content.startswith(prefix) and cmd in del_commands and channel != "Direct":
         await message.delete()
     try:
         await bot.process_commands(message)
     except commands.CommandNotFound:
-        pass
+        await message.delete()
+        desc = "I am not currently programmed for the command: **" + subject + "**"
+        embed = discord.Embed(title="Command **" + subject + "** not found.", description=desc, color=0xeee657)
+        embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
+        await bot.send(embed=embed)
 
 
 
