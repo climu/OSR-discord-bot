@@ -29,6 +29,21 @@ async def on_ready():
     msg = "<@" + str(461792018843172866) + "> was just deployed."
     await channel.send(msg)
 
+# When a new member joins, tag them in "welcome" channel and let them know of our bot
+@bot.event
+async def on_member_join(member):
+    welcome_ch = bot.get_channel(287537238445654016)
+    general_ch = bot.get_channel(287487891003932672)
+    bot_commands_ch = bot.get_channel(287868862559420429)
+    msg = "Welcome to OSR <@" + str(member.id) + ">! We are delighted to have you with us.\n"
+    msg += "I am here to assist you. You can either send me a private message or invoke my commands in the correct channels.\n"
+    msg += "Try, for example, to send `!help` to me, or type it in {} to see what I can do for you.\n".format(bot_commands_ch.mention)  # Bot commands
+    msg += "Otherwise, simply introduce yourself in {} or talk to any of our team members.\n".format(general_ch.mention)  # General
+    msg += "We hope that you enjoy your time with us! :  )"
+    message = await welcome_ch.send(msg)
+    # # Emojo not working :(
+    # emoji = bot.get_emoji(465610558876418068)
+    # await message.add_reaction(emoji=emoji)
 
 @bot.event
 async def on_message(message):
