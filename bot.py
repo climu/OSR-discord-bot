@@ -217,18 +217,11 @@ async def help(ctx, subject=None):
     if subject is None:
         desc = "Help organise this discord channel. The following commands are available:"
         embed = discord.Embed(title="OSR Bot", description=desc, color=0xeee657)
-        value = "To avoid using `@here`, users can choose to be in groups of interest:\n\n"
-        value += "- **!go**: will assign you the ``@player` role. This is for people who are interested in playing OSR games. Tag `@player` when you are looking for a game.\n\n"
-        value += "- **!tsumego**: will assign you the `@tsumegoer` role. This is for people who are interested in tsumego study. Tag `@tsumegoer` when you post a new tsumego or have a related question.\n\n"
-        value += "- **!review**: will assign you the `@reviewer` role. This is for people who are available to give game reviews. Tag `@reviewer` to ask for a game review.\n\n"
-        value += "- **!dan/sdk/ddk**: will assign you the `@dan`, `@sdk` or `@ddk` role. By saying your approximate level, it will allow users to tag the appropriate group when lookinSg for game or help. Feel free to sign up to more than one groups.\n\n"
-        embed.add_field(name="Add a role", value=value, inline=False)
-        embed.add_field(name="Remove a role", value="**!no [role]**: will remove the role. For instance, `!no go` will remove you from the `@player` role", inline=False)
-        embed.add_field(name="List all online users in with a specific role", value="**!list [role]**: will list all online users with the said role. For instance `!list tsumego` will list all online users of the `@tsumego` role.", inline=False)
-        embed.add_field(name="Get one user info", value="**!who [username or #discriminator]**: will give informations about a user given his nickname or discriminator. For instance, my discriminator is `#9501`.", inline=False)
-        embed.add_field(name="!league", value="Find out about OSR leagues.", inline=False)
-        embed.add_field(name="!info", value="Gives a little info about the bot.", inline=False)
-        embed.add_field(name="!help", value="Gives this message.", inline=False)
+        embed.add_field(name="**!roles**", value="Display help file regarding the Discord OSR roles system.", inline=False)
+        embed.add_field(name="**!who [username or #discriminator]**", value="Get one user info: will give informations about a user given his nickname or discriminator. For instance, my discriminator is `#9501`.", inline=False)
+        embed.add_field(name="**!league**", value="Find out about OSR leagues.", inline=False)
+        embed.add_field(name="**!info**", value="Gives a little info about the bot.", inline=False)
+        embed.add_field(name="**!help**", value="Gives this message.", inline=False)
         await ctx.send(embed=embed)
     else:
         pass
@@ -237,6 +230,20 @@ async def help(ctx, subject=None):
             message = 'This functionality is currently under construction. Please refer to our [webpage](https://openstudyroom.org/). :)'
             embed = discord.Embed(title="Under construction ", description=message, color=0xeee657)
             await ctx.send(embed=embed)
+
+@bot.command(pass_context=True)
+async def roles(ctx):
+    desc = "Help organise the discord channel by self-assigning various roles."
+    embed = discord.Embed(title="Roles system", description=desc, color=0xeee657)
+    value = "To avoid using `@here`, users can choose to be in groups of interest:\n\n"
+    value += "- **!go**: will assign you the ``@player` role. This is for people who are interested in playing OSR games. Tag `@player` when you are looking for a game.\n\n"
+    value += "- **!tsumego**: will assign you the `@tsumegoer` role. This is for people who are interested in tsumego study. Tag `@tsumegoer` when you post a new tsumego or have a related question.\n\n"
+    value += "- **!review**: will assign you the `@reviewer` role. This is for people who are available to give game reviews. Tag `@reviewer` to ask for a game review.\n\n"
+    value += "- **!dan/sdk/ddk**: will assign you the `@dan`, `@sdk` or `@ddk` role. By saying your approximate level, it will allow users to tag the appropriate group when lookinSg for game or help. Feel free to sign up to more than one groups.\n\n"
+    embed.add_field(name="Add a role", value=value, inline=False)
+    embed.add_field(name="Remove a role", value="**!no [role]**: will remove the role. For instance, `!no go` will remove you from the `@player` role", inline=False)
+    embed.add_field(name="List all online users in with a specific role", value="**!list [role]**: will list all online users with the said role. For instance `!list tsumego` will list all online users of the `@tsumego` role.", inline=False)
+    await ctx.send(embed=embed)
 
 
 @bot.command(pass_context=True)
