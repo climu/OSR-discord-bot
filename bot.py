@@ -226,6 +226,7 @@ async def help(ctx, subject=None):
         embed.add_field(name="Remove a role", value="**!no [role]**: will remove the role. For instance, `!no go` will remove you from the `@player` role", inline=False)
         embed.add_field(name="List all online users in with a specific role", value="**!list [role]**: will list all online users with the said role. For instance `!list tsumego` will list all online users of the `@tsumego` role.", inline=False)
         embed.add_field(name="Get one user info", value="**!who [username or #discriminator]**: will give informations about a user given his nickname or discriminator. For instance, my discriminator is `#9501`.", inline=False)
+        embed.add_field(name="!league", value="Find out about OSR leagues.", inline=False)
         embed.add_field(name="!info", value="Gives a little info about the bot.", inline=False)
         embed.add_field(name="!help", value="Gives this message.", inline=False)
         await ctx.send(embed=embed)
