@@ -222,14 +222,21 @@ async def help(ctx, subject=None):
         embed.add_field(name="**!league**", value="Find out about OSR leagues.", inline=False)
         embed.add_field(name="**!info**", value="Gives a little info about the bot.", inline=False)
         embed.add_field(name="**!help**", value="Gives this message.", inline=False)
+        embed.add_field(name="**!help osr**", value="Find out how you can help with our community.", inline=False)
         await ctx.send(embed=embed)
     else:
-        pass
-        # Use this for other potential commands, e.g. `!help league`
-        if subject == "this":
-            message = 'This functionality is currently under construction. Please refer to our [webpage](https://openstudyroom.org/). :)'
-            embed = discord.Embed(title="Under construction ", description=message, color=0xeee657)
+        if subject == "osr":
+            title = "I like this project. How can I help?"
+            message = ("There are many ways you can help the OSR project if you like to. Those include but are not limited to:\n" +
+                       " - Playing in our leagues.\n" +
+                       " - Keeping OSR friendly and active.\n" +
+                       " - Giving a couple of $/€ so we can pay for the server and set up quality teaching.\n" +
+                       " - Help us run the community.\n" +
+                       "You can find more details about that [here](https://openstudyroom.org/help-osr/).")
+            embed = discord.Embed(title=title, description=message, color=0xeee657)
             await ctx.send(embed=embed)
+
+
 
 @bot.command(pass_context=True)
 async def roles(ctx):
