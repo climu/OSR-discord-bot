@@ -334,6 +334,13 @@ async def league(ctx, subject=None):
         question = "Our game was classified as private, can we still use it for the league?"
         answer = "You need to upload the SGF file in our Discord and notify one of the members to manually add your game."
         embed.add_field(name=question, value=answer, inline=False)
+        question = "At the end of the month, can I win a prize as a league player?"
+        answer = ("Yes, it is possible to win a prize as a league player. Thanks to the support of our teachers, friends and partners, we are happy to reward our winners with the folowing:\n" +
+                  " - Teaching game with [Péter Markó](https://openstudyroom.org/teachers/marko-peter/) (4 dan EGF).\n" +
+                  " - Teaching game with with [Alexandre Dinerchtein](http://breakfast.go4go.net/) (3 dan pro).\n" +
+                  " - Game commentary with [Justin Teng](https://openstudyroom.org/teachers/justin-teng/) (AGA 6 dan).\n" +
+                  " - 5€ gift certificate at [Guo Juan's internet go school](https://internetgoschool.com/).\n\n")
+        embed.add_field(name=question, value=answer, inline=False)
         question = "I am having some issues with another OSR member, what can I do?"
         answer = ("In the unfortunate event that you have an issue with" +
                   " another member from OSR, we ask you that you contact" +
