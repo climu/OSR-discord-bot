@@ -65,7 +65,8 @@ del_commands = [
     "kj_facepalm",
     "info",
     "help",
-    "league"
+    "league",
+    "roles"
 ]
 
 minutes_in_a_day = 1440
