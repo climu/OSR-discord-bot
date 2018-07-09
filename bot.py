@@ -235,7 +235,7 @@ async def help(ctx, subject=None):
         # Use this for other potential commands, e.g. `!help league`
         if subject == "this":
             message = 'This functionality is currently under construction. Please refer to our [webpage](https://openstudyroom.org/). :)'
-            embed = discord.Embed(title="Under conrstruction ", description=message, color=0xeee657)
+            embed = discord.Embed(title="Under construction ", description=message, color=0xeee657)
             await ctx.send(embed=embed)
 
 
