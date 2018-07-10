@@ -237,6 +237,7 @@ async def help(ctx, subject=None):
         embed.add_field(name="**!roles**", value="Display help file regarding the Discord OSR roles system.", inline=False)
         embed.add_field(name="**!who [username or #discriminator]**", value="Get one user info: will give informations about a user given his nickname or discriminator. For instance, my discriminator is `#9501`.", inline=False)
         embed.add_field(name="**!league**", value="Find out about OSR leagues.", inline=False)
+        embed.add_field(name="**!sensei [term]**", value="Display information for a term from Sensei's Library.", inline=False)
         embed.add_field(name="**!info**", value="Gives a little info about the bot.", inline=False)
         embed.add_field(name="**!help**", value="Gives this message.", inline=False)
         embed.add_field(name="**!help osr**", value="Find out how you can help with our community.", inline=False)
