@@ -1,9 +1,7 @@
 import os
 import discord
 from discord.ext import commands
-import datetime
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 import asyncio
 import requests
 import re
@@ -49,19 +47,24 @@ async def on_member_join(member):
 
 @bot.event
 async def on_message(message):
-    cmd = message.content[1:].split(" ")[0]
-    channel = str(message.channel).split(" ")[0]
-    if message.content.startswith(prefix) and cmd in del_commands and channel != "Direct":
-        await message.delete()
-    try:
-        await bot.process_commands(message)
-    except commands.CommandNotFound:
-        await message.delete()
-        desc = "I am not currently programmed for the command: **" + subject + "**"
-        embed = discord.Embed(title="Command **" + subject + "** not found.", description=desc, color=0xeee657)
-        embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
-        await bot.send(embed=embed)
+    ctx = await bot.get_context(message)
+    if ctx.command is None:
+        # Not a valid command (Normal message or invalid command)
+        if message.content.startswith(prefix):
+            await message.delete()
+            cmd = message.content.split(" ")[0][1:]
+            desc = "I am not currently programmed for the command: **" + cmd + "**"
+            embed = discord.Embed(title="Command **" + cmd + "** not found.", description=desc, color=0xeee657)
+            embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
+            await message.channel.send(embed=embed)
+        return
 
+    cmd = ctx.command.name
+
+    if cmd in del_commands and isinstance(message.channel, discord.TextChannel):
+        await message.delete()
+
+    await bot.process_commands(message)
 
 
 # Here are the pictures commands. That's just for fun.
