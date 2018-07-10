@@ -376,61 +376,68 @@ async def league(ctx, subject=None):
 
 
 @bot.command(pass_context=True, aliases=["define"])
-async def sensei(ctx, term):
+async def sensei(ctx, term=None):
     """Get information from Sensei's Library."""
-    s = requests.Session()
-    url = "https://senseis.xmp.net/"
-    s.headers.update({'referer': url})
-    params = {'searchtype': 'title',
-              'search': term
-              }
-    # Get all results searching by title
-    r = s.get(url, params=params)
-
-    # Separate direct hit
-    regex = (r"\<b\>Direct hit\:\<br\>\<a href=\"\/\?(?P<term_url>.*?)\"" +
-             r"\>(?P<term>.*?)\<\/a\>\<\/b\>")
-    match = re.search(regex, r.text, re.IGNORECASE)
-    if match:
-        url = "https://senseis.xmp.net/?" + match.group('term_url')
-        response = requests.get(url)
-        soup = BeautifulSoup(response.text, "html.parser")
-        paragraphs = soup.find_all("p")
-        title = "**" + soup.title.string + "**"
-        message = paragraphs[1].text + "\n"
-        message += "[See more online]({}) on Sensei's Library.".format(url)
+    if term is None:
+        message = "To search in Sensei's Library, please add a term as: !sensei term"
+        embed = discord.Embed(title="Please add a search term",
+                              description=message, color=0xeee657)
+        embed.set_thumbnail(url="https://senseis.xmp.net/images/stone-hello.png")
+        await ctx.send(embed=embed)
     else:
-        title = "**The term '{}' was not found**".format(term)
-        message = ("The exact term {} was not found on".format(term) +
-                   " Sensei's Library.")
-    embed = discord.Embed(title=title, description=message, color=0xeee657)
-    embed.set_thumbnail(url="https://senseis.xmp.net/images/stone-hello.png")
+        s = requests.Session()
+        url = "https://senseis.xmp.net/"
+        s.headers.update({'referer': url})
+        params = {'searchtype': 'title',
+                  'search': term
+                  }
+        # Get all results searching by title
+        r = s.get(url, params=params)
 
-    # Search for non-direct hits containing the words
-    regex = (r"\<b\>Title containing word( starting with search term)?" +
-             r"\:\<\/b\>\<br\>\n(?:<img .*?)?(?:<a href=\"" +
-             r"/\?(.*?)\">(.*?)</a>.*?\n){1,5}")
-    match = re.search(regex, r.text, re.MULTILINE)
+        # Separate direct hit
+        regex = (r"\<b\>Direct hit\:\<br\>\<a href=\"\/\?(?P<term_url>.*?)\"" +
+                 r"\>(?P<term>.*?)\<\/a\>\<\/b\>")
+        match = re.search(regex, r.text, re.IGNORECASE)
+        if match:
+            url = "https://senseis.xmp.net/?" + match.group('term_url')
+            response = requests.get(url)
+            soup = BeautifulSoup(response.text, "html.parser")
+            paragraphs = soup.find_all("p")
+            title = "**" + soup.title.string + "**"
+            message = paragraphs[1].text + "\n"
+            message += "[See more online]({}) on Sensei's Library.".format(url)
+        else:
+            title = "**The term '{}' was not found**".format(term)
+            message = ("The exact term {} was not found on".format(term) +
+                       " Sensei's Library.")
+        embed = discord.Embed(title=title, description=message, color=0xeee657)
+        embed.set_thumbnail(url="https://senseis.xmp.net/images/stone-hello.png")
 
-    # If there are alternatives, add them in the embed
-    if match:
-        embed.add_field(name="Alternative search terms",
-                        value="Try these alternative terms.", inline=False)
-        groups = match.group(0).split("\n")[1:-1]
-        for index in range(0, len(groups)):
-            regex = r'<a href=\"/\?(?P<term_url>.*?)\"\>(?P<term>.*?)</a>'
-            match = re.search(regex, groups[index])
+        # Search for non-direct hits containing the words
+        regex = (r"\<b\>Title containing word( starting with search term)?" +
+                 r"\:\<\/b\>\<br\>\n(?:<img .*?)?(?:<a href=\"" +
+                 r"/\?(.*?)\">(.*?)</a>.*?\n){1,5}")
+        match = re.search(regex, r.text, re.MULTILINE)
 
-            if match:
-                embed.add_field(name=match.group("term_url"),
-                                value=(("[{}](https://senseis.xmp.net/?" +
-                                        "{})").format(match.group("term"),
-                                       match.group("term_url"))),
-                                inline=True)
-    else:
-        embed.add_field(name="Alternative search terms",
-                        value="No alternative terms found.", inline=False)
-    await ctx.send(embed=embed)
+        # If there are alternatives, add them in the embed
+        if match:
+            embed.add_field(name="Alternative search terms",
+                            value="Try these alternative terms.", inline=False)
+            groups = match.group(0).split("\n")[1:-1]
+            for index in range(0, len(groups)):
+                regex = r'<a href=\"/\?(?P<term_url>.*?)\"\>(?P<term>.*?)</a>'
+                match = re.search(regex, groups[index])
+
+                if match:
+                    embed.add_field(name=match.group("term_url"),
+                                    value=(("[{}](https://senseis.xmp.net/?" +
+                                            "{})").format(match.group("term"),
+                                           match.group("term_url"))),
+                                    inline=True)
+        else:
+            embed.add_field(name="Alternative search terms",
+                            value="No alternative terms found.", inline=False)
+        await ctx.send(embed=embed)
 
 
 async def check_LFG():
