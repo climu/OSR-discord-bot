@@ -6,6 +6,8 @@ from datetime import datetime
 from datetime import timedelta
 import asyncio
 import requests
+import re
+from bs4 import BeautifulSoup
 
 from config import roles_dict, del_commands, minutes_in_a_day, guild_id, expiration_times, prefix
 from utils import *
@@ -29,6 +31,21 @@ async def on_ready():
     msg = "<@" + str(461792018843172866) + "> was just deployed."
     await channel.send(msg)
 
+# When a new member joins, tag them in "welcome" channel and let them know of our bot
+@bot.event
+async def on_member_join(member):
+    welcome_ch = bot.get_channel(287537238445654016)
+    general_ch = bot.get_channel(287487891003932672)
+    bot_commands_ch = bot.get_channel(287868862559420429)
+    msg = "Welcome to OSR <@" + str(member.id) + ">! We are delighted to have you with us.\n"
+    msg += "I am here to assist you. You can either send me a private message or invoke my commands in the correct channels.\n"
+    msg += "Try, for example, to send `!help` to me, or type it in {} to see what I can do for you.\n".format(bot_commands_ch.mention)  # Bot commands
+    msg += "Otherwise, simply introduce yourself in {} or talk to any of our team members.\n".format(general_ch.mention)  # General
+    msg += "We hope that you enjoy your time with us! :  )"
+    message = await welcome_ch.send(msg)
+    # # Emojo not working :(
+    # emoji = bot.get_emoji(465610558876418068)
+    # await message.add_reaction(emoji=emoji)
 
 @bot.event
 async def on_message(message):
@@ -217,25 +234,40 @@ async def help(ctx, subject=None):
     if subject is None:
         desc = "Help organise this discord channel. The following commands are available:"
         embed = discord.Embed(title="OSR Bot", description=desc, color=0xeee657)
-        value = "To avoid using `@here`, users can choose to be in groups of interest:\n\n"
-        value += "- **!go**: will assign you the ``@player` role. This is for people who are interested in playing OSR games. Tag `@player` when you are looking for a game.\n\n"
-        value += "- **!tsumego**: will assign you the `@tsumegoer` role. This is for people who are interested in tsumego study. Tag `@tsumegoer` when you post a new tsumego or have a related question.\n\n"
-        value += "- **!review**: will assign you the `@reviewer` role. This is for people who are available to give game reviews. Tag `@reviewer` to ask for a game review.\n\n"
-        value += "- **!dan/sdk/ddk**: will assign you the `@dan`, `@sdk` or `@ddk` role. By saying your approximate level, it will allow users to tag the appropriate group when lookinSg for game or help. Feel free to sign up to more than one groups.\n\n"
-        embed.add_field(name="Add a role", value=value, inline=False)
-        embed.add_field(name="Remove a role", value="**!no [role]**: will remove the role. For instance, `!no go` will remove you from the `@player` role", inline=False)
-        embed.add_field(name="List all online users in with a specific role", value="**!list [role]**: will list all online users with the said role. For instance `!list tsumego` will list all online users of the `@tsumego` role.", inline=False)
-        embed.add_field(name="Get one user info", value="**!who [username or #discriminator]**: will give informations about a user given his nickname or discriminator. For instance, my discriminator is `#9501`.", inline=False)
-        embed.add_field(name="!info", value="Gives a little info about the bot.", inline=False)
-        embed.add_field(name="!help", value="Gives this message.", inline=False)
+        embed.add_field(name="**!roles**", value="Display help file regarding the Discord OSR roles system.", inline=False)
+        embed.add_field(name="**!who [username or #discriminator]**", value="Get one user info: will give informations about a user given his nickname or discriminator. For instance, my discriminator is `#9501`.", inline=False)
+        embed.add_field(name="**!league**", value="Find out about OSR leagues.", inline=False)
+        embed.add_field(name="**!info**", value="Gives a little info about the bot.", inline=False)
+        embed.add_field(name="**!help**", value="Gives this message.", inline=False)
+        embed.add_field(name="**!help osr**", value="Find out how you can help with our community.", inline=False)
         await ctx.send(embed=embed)
     else:
-        pass
-        # Use this for other potential commands, e.g. `!help league`
-        if subject == "this":
-            message = 'This functionality is currently under construction. Please refer to our [webpage](https://openstudyroom.org/). :)'
-            embed = discord.Embed(title="Under conrstruction ", description=message, color=0xeee657)
+        if subject == "osr":
+            title = "I like this project. How can I help?"
+            message = ("There are many ways you can help the OSR project if you like to. Those include but are not limited to:\n" +
+                       " - Playing in our leagues.\n" +
+                       " - Keeping OSR friendly and active.\n" +
+                       " - Giving a couple of $/€ so we can pay for the server and set up quality teaching.\n" +
+                       " - Help us run the community.\n" +
+                       "You can find more details about that [here](https://openstudyroom.org/help-osr/).")
+            embed = discord.Embed(title=title, description=message, color=0xeee657)
             await ctx.send(embed=embed)
+
+
+
+@bot.command(pass_context=True)
+async def roles(ctx):
+    desc = "Help organise the discord channel by self-assigning various roles."
+    embed = discord.Embed(title="Roles system", description=desc, color=0xeee657)
+    value = "To avoid using `@here`, users can choose to be in groups of interest:\n\n"
+    value += "- **!go**: will assign you the ``@player` role. This is for people who are interested in playing OSR games. Tag `@player` when you are looking for a game.\n\n"
+    value += "- **!tsumego**: will assign you the `@tsumegoer` role. This is for people who are interested in tsumego study. Tag `@tsumegoer` when you post a new tsumego or have a related question.\n\n"
+    value += "- **!review**: will assign you the `@reviewer` role. This is for people who are available to give game reviews. Tag `@reviewer` to ask for a game review.\n\n"
+    value += "- **!dan/sdk/ddk**: will assign you the `@dan`, `@sdk` or `@ddk` role. By saying your approximate level, it will allow users to tag the appropriate group when lookinSg for game or help. Feel free to sign up to more than one groups.\n\n"
+    embed.add_field(name="Add a role", value=value, inline=False)
+    embed.add_field(name="Remove a role", value="**!no [role]**: will remove the role. For instance, `!no go` will remove you from the `@player` role", inline=False)
+    embed.add_field(name="List all online users in with a specific role", value="**!list [role]**: will list all online users with the said role. For instance `!list tsumego` will list all online users of the `@tsumego` role.", inline=False)
+    await ctx.send(embed=embed)
 
 
 @bot.command(pass_context=True)
@@ -319,6 +351,13 @@ async def league(ctx, subject=None):
         question = "Our game was classified as private, can we still use it for the league?"
         answer = "You need to upload the SGF file in our Discord and notify one of the members to manually add your game."
         embed.add_field(name=question, value=answer, inline=False)
+        question = "At the end of the month, can I win a prize as a league player?"
+        answer = ("Yes, it is possible to win a prize as a league player. Thanks to the support of our teachers, friends and partners, we are happy to reward our winners with the folowing:\n" +
+                  " - Teaching game with [Péter Markó](https://openstudyroom.org/teachers/marko-peter/) (4 dan EGF).\n" +
+                  " - Teaching game with with [Alexandre Dinerchtein](http://breakfast.go4go.net/) (3 dan pro).\n" +
+                  " - Game commentary with [Justin Teng](https://openstudyroom.org/teachers/justin-teng/) (AGA 6 dan).\n" +
+                  " - 5€ gift certificate at [Guo Juan's internet go school](https://internetgoschool.com/).\n\n")
+        embed.add_field(name=question, value=answer, inline=False)
         question = "I am having some issues with another OSR member, what can I do?"
         answer = ("In the unfortunate event that you have an issue with" +
                   " another member from OSR, we ask you that you contact" +
@@ -333,6 +372,64 @@ async def league(ctx, subject=None):
         embed = discord.Embed(title="Unknown command", description=desc, color=0xeee657)
         embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
         await ctx.send(embed=embed)
+
+
+@bot.command(pass_context=True, aliases=["define"])
+async def sensei(ctx, term):
+    """Get information from Sensei's Library."""
+    s = requests.Session()
+    url = "https://senseis.xmp.net/"
+    s.headers.update({'referer': url})
+    params = {'searchtype': 'title',
+              'search': term
+              }
+    # Get all results searching by title
+    r = s.get(url, params=params)
+
+    # Separate direct hit
+    regex = (r"\<b\>Direct hit\:\<br\>\<a href=\"\/\?(?P<term_url>.*?)\"" +
+             r"\>(?P<term>.*?)\<\/a\>\<\/b\>")
+    match = re.search(regex, r.text, re.IGNORECASE)
+    if match:
+        url = "https://senseis.xmp.net/?" + match.group('term_url')
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, "html.parser")
+        paragraphs = soup.find_all("p")
+        title = "**" + soup.title.string + "**"
+        message = paragraphs[1].text + "\n"
+        message += "[See more online]({}) on Sensei's Library.".format(url)
+    else:
+        title = "**The term '{}' was not found**".format(term)
+        message = ("The exact term {} was not found on" +
+                   " Sensei's Library.".format(term))
+    embed = discord.Embed(title=title, description=message, color=0xeee657)
+    embed.set_thumbnail(url="https://senseis.xmp.net/images/stone-hello.png")
+
+    # Search for non-direct hits containing the words
+    regex = (r"\<b\>Title containing word( starting with search term)?" +
+             r"\:\<\/b\>\<br\>\n(?:<img .*?)?(?:<a href=\"" +
+             r"/\?(.*?)\">(.*?)</a>.*?\n){1,5}")
+    match = re.search(regex, r.text, re.MULTILINE)
+
+    # If there are alternatives, add them in the embed
+    if match:
+        embed.add_field(name="Alternative search terms",
+                        value="Try these alternative terms.", inline=False)
+        groups = match.group(0).split("\n")[1:-1]
+        for index in range(0, len(groups)):
+            regex = r'<a href=\"/\?(?P<term_url>.*?)\"\>(?P<term>.*?)</a>'
+            match = re.search(regex, groups[index])
+
+            if match:
+                embed.add_field(name=match.group("term_url"),
+                                value=(("[{}](https://senseis.xmp.net/?" +
+                                        "{})").format(match.group("term"),
+                                       match.group("term_url"))),
+                                inline=True)
+    else:
+        embed.add_field(name="Alternative search terms",
+                        value="No alternative terms found.", inline=False)
+    await ctx.send(embed=embed)
 
 
 async def check_LFG():
