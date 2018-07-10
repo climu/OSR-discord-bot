@@ -6,6 +6,7 @@ from datetime import datetime
 from datetime import timedelta
 import asyncio
 import requests
+from bs4 import BeautifulSoup
 
 from config import roles_dict, del_commands, minutes_in_a_day, guild_id, expiration_times, prefix
 from utils import *
@@ -371,6 +372,26 @@ async def league(ctx, subject=None):
         embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
         await ctx.send(embed=embed)
 
+
+@bot.command(pass_context=True, aliases=["define"])
+async def sensei(ctx, term):
+    url = "https://senseis.xmp.net/?" + term
+	response = requests.get(url)
+	if response.ok:
+		soup = BeautifulSoup(response.text, "html.parser")
+		paragraphs = soup.find_all("p")
+
+		title = "**" + soup.title.string + "**"
+		message = paragraphs[1].text + "\n"
+		message += "See more online at Sensei's Library at [here]({}).".format(url)
+
+	else:
+		title = "**The term '{}' was not found**".format(term)
+		message = "The term exact {} was not found in Sensei's Library.".format(term)
+    embed = discord.Embed(title=title, description=message, color=0xeee657)
+	embed.set_thumbnail(url="https://senseis.xmp.net/images/stone-hello.png")
+	await ctx.send(embed=embed)
+    
 
 async def check_LFG():
     await bot.wait_until_ready()
