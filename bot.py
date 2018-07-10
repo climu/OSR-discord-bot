@@ -400,8 +400,8 @@ async def sensei(ctx, term):
         message += "[See more online]({}) on Sensei's Library.".format(url)
     else:
         title = "**The term '{}' was not found**".format(term)
-        message = ("The exact term {} was not found on" +
-                   " Sensei's Library.".format(term))
+        message = ("The exact term {} was not found on".format(term) +
+                   " Sensei's Library.")
     embed = discord.Embed(title=title, description=message, color=0xeee657)
     embed.set_thumbnail(url="https://senseis.xmp.net/images/stone-hello.png")
 
