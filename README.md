@@ -1,16 +1,19 @@
 # Discord bot of the Open Study Room
 ### Huge thanks to FluffM for coding it. Original code can be found [here](https://github.com/Thrillberg/looking-for-game-bot).
 
-This bot so far has the following commands:
+This bot has a variety of commands, and it is still in active development.
+The most basic commands to get our users going are listed below:
 
 ```
-!LFG [minutes] - Adds the LFG role. If you are currently looking (and have the LFG role already), will remove the LFG role. Adding a number as the [minutes] will limit the number of minutes you will have the LFG role. Defaults to 1440 (1 day).
+!roles - Gives you information about the available roles in our OSR Discord Channel
 
-!whos_LFG - Tells you all the users who are currently looking for a game.
+!league - Contains information about OSR Leagues, rules and participation
+
+!sensei [term] - Displays the first paragraph for a specified term from Sensei's Library
 
 !info - Basic info about the bot.
 
-!help - A list of commands.
+!help - A more detailed list of commands.
 ```
 
 To run it, you'll need to provide your own bot token, to be pulled from your shell's environment variables (`LFG_TOKEN`). In my case, I added `export LFG_TOKEN="my-token-here"` to `~/.zshenv` (since I use Z Shell).
