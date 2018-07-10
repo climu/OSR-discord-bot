@@ -422,9 +422,10 @@ async def sensei(ctx, term):
 
             if match:
                 embed.add_field(name=match.group("term_url"),
-                                value=("[{}](https://senseis.xmp.net/?" +
-                                       "{})".format(match.group("term")),
-                                match.group("term_url")), inline=True)
+                                value=(("[{}](https://senseis.xmp.net/?" +
+                                        "{})").format(match.group("term"),
+                                       match.group("term_url"))),
+                                inline=True)
     else:
         embed.add_field(name="Alternative search terms",
                         value="No alternative terms found.", inline=False)
