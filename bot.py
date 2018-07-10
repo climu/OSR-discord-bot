@@ -376,22 +376,22 @@ async def league(ctx, subject=None):
 @bot.command(pass_context=True, aliases=["define"])
 async def sensei(ctx, term):
     url = "https://senseis.xmp.net/?" + term
-	response = requests.get(url)
-	if response.ok:
-		soup = BeautifulSoup(response.text, "html.parser")
-		paragraphs = soup.find_all("p")
+    response = requests.get(url)
+    if response.ok:
+        soup = BeautifulSoup(response.text, "html.parser")
+        paragraphs = soup.find_all("p")
 
-		title = "**" + soup.title.string + "**"
-		message = paragraphs[1].text + "\n"
-		message += "See more online at Sensei's Library at [here]({}).".format(url)
+        title = "**" + soup.title.string + "**"
+        message = paragraphs[1].text + "\n"
+        message += "See more online at Sensei's Library [here]({}).".format(url)
 
-	else:
-		title = "**The term '{}' was not found**".format(term)
-		message = "The term exact {} was not found in Sensei's Library.".format(term)
+    else:
+        title = "**The term '{}' was not found**".format(term)
+        message = "The term exact {} was not found in Sensei's Library.".format(term)
     embed = discord.Embed(title=title, description=message, color=0xeee657)
-	embed.set_thumbnail(url="https://senseis.xmp.net/images/stone-hello.png")
-	await ctx.send(embed=embed)
-    
+    embed.set_thumbnail(url="https://senseis.xmp.net/images/stone-hello.png")
+    await ctx.send(embed=embed)
+
 
 async def check_LFG():
     await bot.wait_until_ready()
