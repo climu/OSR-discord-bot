@@ -387,7 +387,7 @@ async def sensei(ctx, term):
 
     else:
         title = "**The term '{}' was not found**".format(term)
-        message = "The term exact {} was not found in Sensei's Library.".format(term)
+        message = "The exact term {} was not found in Sensei's Library.".format(term)
     embed = discord.Embed(title=title, description=message, color=0xeee657)
     embed.set_thumbnail(url="https://senseis.xmp.net/images/stone-hello.png")
     await ctx.send(embed=embed)
