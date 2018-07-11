@@ -421,19 +421,19 @@ async def sensei(ctx, term=None):
 
         # If there are alternatives, add them in the embed
         if match:
-            embed.add_field(name="Alternative search terms",
-                            value="Try these alternative terms.", inline=False)
             groups = match.group(0).split("\n")[1:-1]
+            value = ""
             for index in range(0, len(groups)):
                 regex = r'<a href=\"/\?(?P<term_url>.*?)\"\>(?P<term>.*?)</a>'
                 match = re.search(regex, groups[index])
-
                 if match:
-                    embed.add_field(name=match.group("term_url"),
-                                    value=(("[{}](https://senseis.xmp.net/?" +
-                                            "{})").format(match.group("term"),
-                                           match.group("term_url"))),
-                                    inline=True)
+                    value += ("[{}](https://senseis.xmp.net/?" +
+                            "{})\n").format(match.group("term"),
+                           match.group("term_url"))
+
+            embed.add_field(name='Alternative search terms:',
+                                    value=value,
+                                    inline=False)
         else:
             embed.add_field(name="Alternative search terms",
                             value="No alternative terms found.", inline=False)
