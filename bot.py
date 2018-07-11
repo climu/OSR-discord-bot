@@ -1,9 +1,7 @@
 import os
 import discord
 from discord.ext import commands
-import datetime
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 import asyncio
 import requests
 import re
@@ -49,19 +47,26 @@ async def on_member_join(member):
 
 @bot.event
 async def on_message(message):
-    cmd = message.content[1:].split(" ")[0]
-    channel = str(message.channel).split(" ")[0]
-    if message.content.startswith(prefix) and cmd in del_commands and channel != "Direct":
-        await message.delete()
-    try:
-        await bot.process_commands(message)
-    except commands.CommandNotFound:
-        await message.delete()
-        desc = "I am not currently programmed for the command: **" + subject + "**"
-        embed = discord.Embed(title="Command **" + subject + "** not found.", description=desc, color=0xeee657)
-        embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
-        await bot.send(embed=embed)
+    view = commands.view.StringView(message.content)
+    invoker = view.get_word()
 
+    if not invoker.startswith(prefix) or invoker is None or invoker == "":
+        # Not a command - return early
+        return
+
+    cmd = invoker[1:]
+
+    if cmd in del_commands and isinstance(message.channel, discord.TextChannel):
+        await message.delete()
+
+    if invoker in bot.commands:
+        await bot.process_commands(message)
+    else:
+        await message.delete()
+        desc = "I am not currently programmed for the command: **" + invoker + "**"
+        embed = discord.Embed(title="Command **" + invoker + "** not found.", description=desc, color=0xeee657)
+        embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
+        await message.channel.send(embed=embed)
 
 
 # Here are the pictures commands. That's just for fun.
