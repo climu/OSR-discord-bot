@@ -70,45 +70,26 @@ async def on_message(message):
 
 # Here are the pictures commands. That's just for fun.
 
-
-@bot.command(pass_context=True)
-async def cho(ctx):
-    embed = discord.Embed(description="Requested by: " + ctx.author.mention)
-    embed.set_thumbnail(url=ctx.author.avatar_url)
-    embed.set_image(url="https://cdn.discordapp.com/attachments/456532168370290695/461802038276390923/cho.png")
-    await ctx.send(embed=embed)
-
-
-@bot.command(pass_context=True)
-async def cho_hug(ctx):
-    embed = discord.Embed(description="Requested by: " + ctx.author.mention)
-    embed.set_thumbnail(url=ctx.author.avatar_url)
-    embed.set_image(url="https://cdn.discordapp.com/attachments/430062036903395329/444192620504416268/WroCzKKKj7o.png")
-    await ctx.send(embed=embed)
+PICTURE_COMMANDS = {
+        "cho": "https://cdn.discordapp.com/attachments/456532168370290695/461802038276390923/cho.png",
+        "cho_hug": "https://cdn.discordapp.com/attachments/430062036903395329/444192620504416268/WroCzKKKj7o.png",
+        "chang_ho": "https://cdn.discordapp.com/attachments/430062036903395329/432619582054858806/153746110828-nong01.png",
+        "yuta": "https://cdn.discordapp.com/attachments/430062036903395329/432619582054858806/153746110828-nong01.png",
+        "kj_facepalm": "https://cdn.discordapp.com/attachments/366870031285616651/461813881900236821/iozlnkjg.png"
+        }
 
 
-@bot.command(pass_context=True)
-async def chang_ho(ctx):
-    embed = discord.Embed(description="Requested by: " + ctx.author.mention)
-    embed.set_thumbnail(url=ctx.author.avatar_url)
-    embed.set_image(url="https://cdn.discordapp.com/attachments/430062036903395329/432619582054858806/153746110828-nong01.png")
-    await ctx.send(embed=embed)
+def picture_command(url):
+    async def inner(ctx):
+        embed = discord.Embed(description="Requested by: " + ctx.author.mention)
+        embed.set_thumbnail(url=ctx.author.avatar_url)
+        embed.set_image(url=url)
+        await ctx.send(embed=embed)
+    return inner
 
 
-@bot.command(pass_context=True)
-async def yuta(ctx):
-    embed = discord.Embed(description="Requested by: " + ctx.author.mention)
-    embed.set_thumbnail(url=ctx.author.avatar_url)
-    embed.set_image(url="https://cdn.discordapp.com/attachments/430062036903395329/432619582054858806/153746110828-nong01.png")
-    await ctx.send(embed=embed)
-
-
-@bot.command(pass_context=True)
-async def kj_facepalm(ctx):
-    embed = discord.Embed(description="Requested by: " + ctx.author.mention)
-    embed.set_thumbnail(url=ctx.author.avatar_url)
-    embed.set_image(url="https://cdn.discordapp.com/attachments/366870031285616651/461813881900236821/iozlnkjg.png")
-    await ctx.send(embed=embed)
+for name, url in PICTURE_COMMANDS.items():
+    bot.command(pass_context=True, name=name)(picture_command(url))
 
 # Roles managment start here
 
