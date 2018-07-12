@@ -53,7 +53,8 @@ async def on_message(message):
         if message.content.startswith(prefix):
             await message.delete()
             cmd = message.content.split(" ")[0][1:]
-            desc = "I am not currently programmed for the command: **" + cmd + "**"
+            desc = "I am not currently programmed for the command: **" + cmd + "**\n\n"
+            desc += "Please see the available commands by typing `!help`."
             embed = discord.Embed(title="Command **" + cmd + "** not found.", description=desc, color=0xeee657)
             embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
             await message.channel.send(embed=embed)
