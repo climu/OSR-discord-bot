@@ -53,9 +53,9 @@ async def on_message(message):
         if message.content.startswith(prefix):
             await message.delete()
             cmd = message.content.split(" ")[0][1:]
-            desc = "I am not currently programmed for the command: **" + cmd + "**\n\n"
+            desc = "I am not currently programmed for the command: " + cmd + "\n\n"
             desc += "Please see the available commands by typing `!help`."
-            embed = discord.Embed(title="Command **" + cmd + "** not found.", description=desc, color=0xeee657)
+            embed = discord.Embed(title="Command " + cmd + " not found.", description=desc, color=0xeee657)
             embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
             await message.channel.send(embed=embed)
         return
@@ -247,7 +247,7 @@ async def roles(ctx):
     desc = "Help organise the discord channel by self-assigning various roles."
     embed = discord.Embed(title="Roles system", description=desc, color=0xeee657)
     value = "To avoid using `@here`, users can choose to be in groups of interest:\n\n"
-    value += "- **!go**: will assign you the ``@player` role. This is for people who are interested in playing OSR games. Tag `@player` when you are looking for a game.\n\n"
+    value += "- **!go**: will assign you the `@player` role. This is for people who are interested in playing OSR games. Tag `@player` when you are looking for a game.\n\n"
     value += "- **!tsumego**: will assign you the `@tsumegoer` role. This is for people who are interested in tsumego study. Tag `@tsumegoer` when you post a new tsumego or have a related question.\n\n"
     value += "- **!review**: will assign you the `@reviewer` role. This is for people who are available to give game reviews. Tag `@reviewer` to ask for a game review.\n\n"
     value += "- **!dan/sdk/ddk**: will assign you the `@dan`, `@sdk` or `@ddk` role. By saying your approximate level, it will allow users to tag the appropriate group when lookinSg for game or help. Feel free to sign up to more than one groups.\n\n"
