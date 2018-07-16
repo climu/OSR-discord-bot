@@ -44,9 +44,6 @@ pics = {
 
 # For the following commands, the calling message will be deleted
 del_commands = [
-    "lfg",
-    "game",
-    "LFG",
     "go",
     "GO",
     "tsumego",
