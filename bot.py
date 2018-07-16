@@ -95,7 +95,7 @@ for name, url in PICTURE_COMMANDS.items():
 # Roles managment start here
 
 
-@bot.command(pass_context=True, aliases=["lfg", "game", "LFG", "play", "GO", "PLAY", "GAME"])
+@bot.command(pass_context=True, aliases=["play", "GO", "PLAY"])
 async def go(ctx, minutes=minutes_in_a_day):
     role_dict = roles_dict['go']
 
