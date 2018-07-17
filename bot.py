@@ -108,7 +108,7 @@ async def go(ctx, minutes=minutes_in_a_day):
     role = role_dict["role"]
     #no need to call get_user here because ctx.message.author is already a member instance
     user = ctx.message.author
-    infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
+    infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
     expiration_time = datetime.now() + timedelta(minutes=minutes)
     expiration_times[ctx.author.id] = expiration_time
     if role in ctx.message.author.roles:
@@ -163,7 +163,7 @@ async def no(ctx, role_name):
 async def who(ctx, username):
     user = get_user(username, bot)
     if user is not None:
-        infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
+        infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
         if not infos:
             message = user.mention + ' was too lazy to link their OSR account with their discord. They just have to follow this [link](https://openstudyroom.org/discord/)!'
             embed = discord.Embed(title="Lazy " + user.name, description=message, color=0xeee657)
@@ -198,7 +198,7 @@ async def whos(ctx, role_name):
     users = [x for x in role.members if str(x.status) == "online"]
     if len(users) > 0:
         uids = [member.id for member in users]
-        infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
+        infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
         message = ctx.message.author.mention + ": The following users are " + role_dict['verbose'] + ":\n"
         for user in users:
             message += user_info_message(user, infos)
@@ -213,6 +213,7 @@ async def info(ctx):
     await ctx.send(embed=embed)
 
 bot.remove_command('help')
+
 
 
 @bot.command(pass_context=True)
