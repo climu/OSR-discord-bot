@@ -34,6 +34,8 @@ roles_dict = {
     },
 }
 
+member_role_id = 287489624014585866
+
 pics = {
     "cho": "https://cdn.discordapp.com/attachments/456532168370290695/461802038276390923/cho.png",
     "cho_hug": "https://cdn.discordapp.com/attachments/430062036903395329/444192620504416268/WroCzKKKj7o.png",

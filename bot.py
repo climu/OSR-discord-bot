@@ -7,12 +7,56 @@ import requests
 import re
 from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
+from typing import Dict, List, Tuple  # noqa
 
 from config import roles_dict, del_commands, minutes_in_a_day, guild_id, expiration_times, prefix
 from utils import *
 
 bot = commands.Bot(command_prefix=prefix)
 roles_are_set = False
+
+SPECIAL_MESSAGES = {}  # type: Dict[int, SpecialMessage]
+
+
+class UnsentMessage():
+    def __init__(self, message: str, embed: discord.Embed) -> None:
+        self.message = message
+        self.embed = embed
+
+    async def send(self, ctx: commands.Context) -> None:
+        await ctx.send(self.message, embed=self.embed)
+
+
+class SpecialMessage():
+    def __init__(self, message: discord.Message, originator: discord.User) -> None:
+        self.message = message
+        self.originator = originator
+
+    async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User) -> None:
+        pass
+
+
+class WhoMessage(SpecialMessage):
+    def __init__(self, message: discord.Message, originator: discord.User, matches: List[discord.User]) -> None:
+        super().__init__(message, originator)
+        self.matches = matches
+
+    async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User) -> None:
+        if user != self.originator:
+            return
+
+        try:
+            idx = int(reaction.emoji[0]) - 1
+
+            info = get_user_info(self.matches[idx])
+            await self.message.clear_reactions()
+            await self.message.edit(content=info.message, embed=info.embed)
+
+            del SPECIAL_MESSAGES[self.message.id]
+        except (ValueError, IndexError):
+            # Wrong emoji
+            return
+
 
 async def get_roles():
     global roles_are_set
@@ -79,6 +123,12 @@ PICTURE_COMMANDS = {
         "kj_facepalm": "https://cdn.discordapp.com/attachments/366870031285616651/461813881900236821/iozlnkjg.png",
         "scary": "https://cdn.discordapp.com/attachments/463639475751354368/467077666298789908/Head.png"
         }
+
+
+@bot.event
+async def on_reaction_add(reaction: discord.Reaction, user: discord.User) -> None:
+    if reaction.message.id in SPECIAL_MESSAGES:
+        await SPECIAL_MESSAGES[reaction.message.id].on_reaction_add(reaction, user)
 
 
 def picture_command(url):
@@ -159,44 +209,62 @@ async def no(ctx, role_name):
     await ctx.send(ctx.message.author.mention + " is no longer " + role_dict["verbose"] + ".")
 
 
+def get_user_info(user: discord.User) -> UnsentMessage:
+    infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
+    if not infos:
+        message = user.mention + ' was too lazy to link their OSR account with their discord. They just have to follow this [link](https://openstudyroom.org/discord/)!'
+        embed = discord.Embed(title="Lazy " + user.name, description=message, color=0xeee657)
+        return UnsentMessage("", embed)
+    else:
+        message = user_info_message(user, infos)
+        return UnsentMessage(message, None)
+
+
 @bot.command(pass_context=True, aliases=['user'])
-async def who(ctx, username):
+async def who(ctx: commands.Context, username: str) -> None:
     user = get_user(username, bot)
+
     if user is not None:
-        infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
-        if not infos:
-            message = user.mention + ' was too lazy to link their OSR account with their discord. They just have to follow this [link](https://openstudyroom.org/discord/)!'
-            embed = discord.Embed(title="Lazy " + user.name, description=message, color=0xeee657)
-            await ctx.send(embed=embed)
-        else:
-            message = user_info_message(user, infos)
-            await ctx.send(message)
-    else:  # Look for nearest matches, if they exist
-        users = bot.get_guild(guild_id).members
-        # Just using sequencematcher because its simple and no need to install extra Library
-        # If keen on better distrance metrics, look at installing Jellyfish or Fuzzy Wuzzy
-        similarities = [(member, max(SequenceMatcher(None, username.lower(), member.display_name.lower()).ratio(),
-                                    SequenceMatcher(None, username.lower(), member.name.lower()).ratio())) for member in users]
-        similarities.sort(key=lambda tup: tup[1], reverse=True)
+        await get_user_info(user).send(ctx)
+        return
 
-        top_matches = [x for x in similarities[:5] if x[1]>0.7]     # unlikely to get 5 with >70% match anyway...
+    # Look for nearest matches, if they exist
+    users = bot.get_guild(guild_id).members  # type: List[discord.Member]
+    # Just using sequencematcher because its simple and no need to install extra Library
+    # If keen on better distrance metrics, look at installing Jellyfish or Fuzzy Wuzzy
+    similarities = [(member,
+                     max(SequenceMatcher(None, username.lower(), member.display_name.lower()).ratio(),
+                         SequenceMatcher(None, username.lower(), member.name.lower()).ratio())) for member in users]
+    similarities.sort(key=lambda tup: tup[1], reverse=True)
 
-        uids = [x[0].id for x in top_matches]
-        infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
+    # unlikely to get 5 with >70% match anyway...
+    top_matches = [x for x in similarities[:5] if x[1] > 0.7]  # type: List[Tuple[discord.Member, float]]
+    no_top_matches = len(top_matches)
 
-        # Split and recombine so that OSR members appear top of list
-        osr_members = [x for x in top_matches if infos.get(str(x[0].id)) is not None]
-        not_osr_members = [x for x in top_matches if x not in osr_members]
-        top_matches = osr_members + not_osr_members
+    uids = [x[0].id for x in top_matches]
+    infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
 
-        message = ''
-        for x in top_matches:
-            message += '\n**{}**#{} {}'.format(x[0].display_name, x[0].discriminator, user_rank(x[0], infos))
-        if username in roles_dict:
-            message += "\n\n However, `" + username + "` is a valid role. Did you mean `!list " + username + "`?"
-        nearest_or_sorry = '", nearest matches:' if top_matches else '", sorry'
-        embed = discord.Embed(description=message, title='No users by the exact name "' + username + nearest_or_sorry)
-        await ctx.send(embed=embed)
+    # Split and recombine so that OSR members appear top of list
+    osr_members = [x for x in top_matches if infos.get(str(x[0].id)) is not None]
+    not_osr_members = [x for x in top_matches if x not in osr_members]
+    top_matches = osr_members + not_osr_members
+
+    message = ''
+    for _i, x in enumerate(top_matches):
+        message += '\n{}\N{COMBINING ENCLOSING KEYCAP}**{}**#{} {}'.format(_i + 1,
+                                                                           x[0].display_name,
+                                                                           x[0].discriminator,
+                                                                           user_rank(x[0], infos))
+    if username in roles_dict:
+        message += "\n\n However, `" + username + "` is a valid role. Did you mean `!list " + username + "`?"
+    nearest_or_sorry = '", nearest matches:' if top_matches else '", sorry'
+    embed = discord.Embed(description=message, title='No users by the exact name "' + username + nearest_or_sorry)
+    msg = await ctx.send(embed=embed)
+
+    for _i, match in enumerate(top_matches):  # type: Tuple[int, Tuple[discord.Member, float]]
+        await msg.add_reaction(str(_i + 1) + '\N{COMBINING ENCLOSING KEYCAP}')
+
+    SPECIAL_MESSAGES[msg.id] = WhoMessage(msg, ctx.message.author, [x[0] for x in top_matches])
 
 
 @bot.command(pass_context=True, aliases=["list"])
@@ -229,7 +297,6 @@ async def info(ctx):
     await ctx.send(embed=embed)
 
 bot.remove_command('help')
-
 
 
 @bot.command(pass_context=True)
