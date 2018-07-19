@@ -6,6 +6,7 @@ import asyncio
 import requests
 import re
 from bs4 import BeautifulSoup
+from difflib import SequenceMatcher
 
 from config import roles_dict, del_commands, minutes_in_a_day, guild_id, expiration_times, prefix
 from utils import *
@@ -158,8 +159,7 @@ async def no(ctx, role_name):
     await ctx.send(ctx.message.author.mention + " is no longer " + role_dict["verbose"] + ".")
 
 
-
-@bot.command(pass_context=True, aliases=["user"])
+@bot.command(pass_context=True, aliases=['user'])
 async def who(ctx, username):
     user = get_user(username, bot)
     if user is not None:
@@ -171,16 +171,32 @@ async def who(ctx, username):
         else:
             message = user_info_message(user, infos)
             await ctx.send(message)
-    else:
-        message = ctx.message.author.mention + ": We have no OSR member with the "
-        if username.startswith("#"):
-            message += "discriminator "
-        else:
-            message += "username "
-        message += "`" + username + "`. Sorry."
+    else:  # Look for nearest matches, if they exist
+        users = bot.get_guild(guild_id).members
+        # Just using sequencematcher because its simple and no need to install extra Library
+        # If keen on better distrance metrics, look at installing Jellyfish or Fuzzy Wuzzy
+        similarities = [(member, max(SequenceMatcher(None, username.lower(), member.display_name.lower()).ratio(),
+                                    SequenceMatcher(None, username.lower(), member.name.lower()).ratio())) for member in users]
+        similarities.sort(key=lambda tup: tup[1], reverse=True)
+
+        top_matches = [x for x in similarities[:5] if x[1]>0.7]     # unlikely to get 5 with >70% match anyway...
+
+        uids = [x[0].id for x in top_matches]
+        infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
+
+        # Split and recombine so that OSR members appear top of list
+        osr_members = [x for x in top_matches if infos.get(str(x[0].id)) is not None]
+        not_osr_members = [x for x in top_matches if x not in osr_members]
+        top_matches = osr_members + not_osr_members
+
+        message = ''
+        for x in top_matches:
+            message += '\n**{}**#{} {}'.format(x[0].display_name, x[0].discriminator, user_rank(x[0], infos))
         if username in roles_dict:
             message += "\n\n However, `" + username + "` is a valid role. Did you mean `!list " + username + "`?"
-        await ctx.send(message)
+        nearest_or_sorry = '", nearest matches:' if top_matches else '", sorry'
+        embed = discord.Embed(description=message, title='No users by the exact name "' + username + nearest_or_sorry)
+        await ctx.send(embed=embed)
 
 
 @bot.command(pass_context=True, aliases=["list"])
