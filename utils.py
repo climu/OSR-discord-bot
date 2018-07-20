@@ -1,4 +1,4 @@
-from config import roles_dict
+from config import roles_dict, member_role_id
 import discord
 from config import *
 
@@ -54,7 +54,7 @@ def user_rank(user, infos):
     return message
 
 def get_user(username, bot):
-    role = discord.utils.get(bot.get_guild(guild_id).roles, id=287489624014585866)
+    role = discord.utils.get(bot.get_guild(guild_id).roles, id=member_role_id)
     if username[0] == "#":
         user = discord.utils.get(role.members, discriminator=str(username[1:]))
     else:
