@@ -67,7 +67,8 @@ del_commands = [
     "league",
     "roles",
     "sensei",
-    "define"
+    "define",
+    "scary"
 ]
 
 minutes_in_a_day = 1440
