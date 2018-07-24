@@ -26,13 +26,14 @@ def user_info_message(user, infos):
         kgs_rank = info.get('kgs_rank')
         ogs_username = info.get('ogs_username')
         ogs_rank = info.get('ogs_rank')
+        ogs_id = info.get('ogs_id')
         servers = []
         if kgs_username is not None or ogs_username is not None:
             message += ':'
             if ogs_username is not None:
-                servers.append(' OGS | ' + ogs_username + ' (' + ogs_rank + ')')
+                servers.append(' OGS | [{}](https://online-go.com/player/{}) ({})'.format(ogs_username, ogs_id, ogs_rank))
             if kgs_username is not None:
-                servers.append(' KGS | ' + kgs_username + ' (' + kgs_rank + ')')
+                servers.append(' KGS | [{u}](http://www.gokgs.com/graphPage.jsp?user={u}) ({r})'.format(u=kgs_username,r=kgs_rank))
         message += ' - '.join(servers)
     message += '\n'
     return message
@@ -43,12 +44,14 @@ def user_rank(user, infos):
     if info is not None:
         kgs_rank = info.get('kgs_rank')
         ogs_rank = info.get('ogs_rank')
+        kgs_username = info.get('kgs_username')
+        ogs_id = info.get('ogs_id')
         servers = []
         if kgs_rank is not None or ogs_rank is not None:
             if ogs_rank is not None:
-                servers.append('OGS: ' + ogs_rank )
+                servers.append('[OGS](https://online-go.com/player/{}): {}'.format(ogs_id, ogs_rank))
             if kgs_rank is not None:
-                servers.append('KGS: ' + kgs_rank )
+                servers.append('[KGS](http://www.gokgs.com/graphPage.jsp?user={}): {}'.format(kgs_username, kgs_rank))
             message += ' - '.join(servers)
             message = '({0})'.format(message)
     return message

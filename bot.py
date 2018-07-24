@@ -49,9 +49,10 @@ class WhoMessage(SpecialMessage):
             idx = int(reaction.emoji[0]) - 1
 
             info = get_user_info(self.matches[idx])
+            info.embed.set_footer(text='Requested by: '+self.originator.name+'#'+self.originator.discriminator, icon_url=self.originator.avatar_url)
             await self.message.clear_reactions()
+            await self.message.edit(embed=None) #This needs to be here for some reason, else we get an extra name after edit...
             await self.message.edit(content=info.message, embed=info.embed)
-
             del SPECIAL_MESSAGES[self.message.id]
         except (ValueError, IndexError):
             # Wrong emoji
@@ -217,15 +218,19 @@ def get_user_info(user: discord.User) -> UnsentMessage:
         return UnsentMessage("", embed)
     else:
         message = user_info_message(user, infos)
-        return UnsentMessage(message, None)
+        embed = discord.Embed(description=message)
+        return UnsentMessage("", embed)
 
 
 @bot.command(pass_context=True, aliases=['user'])
 async def who(ctx: commands.Context, username: str) -> None:
+
     user = get_user(username, bot)
 
     if user is not None:
-        await get_user_info(user).send(ctx)
+        info = get_user_info(user)
+        info.embed.set_footer(text='Requested by: '+ctx.message.author.name+'#'+ctx.message.author.discriminator, icon_url=ctx.message.author.avatar_url)
+        await info.send(ctx)
         return
 
     # Look for nearest matches, if they exist
@@ -259,6 +264,7 @@ async def who(ctx: commands.Context, username: str) -> None:
         message += "\n\n However, `" + username + "` is a valid role. Did you mean `!list " + username + "`?"
     nearest_or_sorry = '", nearest matches:' if top_matches else '", sorry'
     embed = discord.Embed(description=message, title='No users by the exact name "' + username + nearest_or_sorry)
+    embed.set_footer(text='Requested by: '+ctx.message.author.name+'#'+ctx.message.author.discriminator, icon_url=ctx.message.author.avatar_url)
     msg = await ctx.send(embed=embed)
 
     for _i, match in enumerate(top_matches):  # type: Tuple[int, Tuple[discord.Member, float]]
@@ -283,10 +289,14 @@ async def whos(ctx, role_name):
     if len(users) > 0:
         uids = [member.id for member in users]
         infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
-        message = ctx.message.author.mention + ": The following users are " + role_dict['verbose'] + ":\n"
+        message = ''
         for user in users:
             message += user_info_message(user, infos)
-        await ctx.send(message)
+        title= "The following users are " + role_dict['verbose'] + ":"
+        embed = discord.Embed(title=title, description=message)
+        embed.set_footer(text='Requested by: '+ctx.message.author.name+'#'+ctx.message.author.discriminator, icon_url=ctx.message.author.avatar_url)
+        await ctx.send(embed=embed)
+
     else:
         await ctx.send("Sorry " + ctx.message.author.mention + ". Unfortunately, nobody is " + role_dict['verbose'] + " right now. :(")
 
