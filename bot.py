@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 from typing import Dict, List, Tuple  # noqa
 
-from config import roles_dict, del_commands, minutes_in_a_day, guild_id, expiration_times, prefix
+from config import roles_dict, del_commands, minutes_in_a_day, guild_id, expiration_times, prefix, channels
 from utils import *
 
 bot = commands.Bot(command_prefix=prefix)
@@ -71,16 +71,16 @@ async def get_roles():
 @bot.event
 async def on_ready():
     """Display a message for which time was bot last updated."""
-    channel = bot.get_channel(463639475751354368)
-    msg = "<@" + str(461792018843172866) + "> was just deployed."
+    channel = bot.get_channel(channels["testing-bots"])
+    msg = "{} was just deployed.".format(bot.user.mention)
     await channel.send(msg)
 
 # When a new member joins, tag them in "welcome" channel and let them know of our bot
 @bot.event
 async def on_member_join(member):
-    welcome_ch = bot.get_channel(287537238445654016)
-    general_ch = bot.get_channel(287487891003932672)
-    bot_commands_ch = bot.get_channel(287868862559420429)
+    welcome_ch = bot.get_channel(channels["welcome"])
+    general_ch = bot.get_channel(channels["general"])
+    bot_commands_ch = bot.get_channel(channels["bot-commands"])
     msg = "Welcome to OSR <@" + str(member.id) + ">! We are delighted to have you with us.\n"
     msg += "I am here to assist you. You can either send me a private message or invoke my commands in the correct channels.\n"
     msg += "Try, for example, to send `!help` to me, or type it in {} to see what I can do for you.\n".format(bot_commands_ch.mention)  # Bot commands
