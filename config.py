@@ -41,7 +41,7 @@ channels = {
     "bot-commands": 287868862559420429
 }
 
-member_role_id = 468121374083514399
+member_role_id = 287489624014585866
 
 pics = {
     "cho": "https://cdn.discordapp.com/attachments/456532168370290695/461802038276390923/cho.png",
