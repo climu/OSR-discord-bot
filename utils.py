@@ -1,6 +1,7 @@
 from config import roles_dict, member_role_id
 import discord
-from config import *
+from config import guild_id
+
 
 async def add_role(ctx, role_name):
     role_dict = roles_dict[role_name]
@@ -18,6 +19,7 @@ async def add_role(ctx, role_name):
         await ctx.message.author.add_roles(role)
         await ctx.send("Hey, " + ctx.message.author.mention + " is " + role_dict["verbose"] + ".")
 
+
 def user_info_message(user, infos):
     message = '**' + user.name + '**'
     info = infos.get(str(user.id))
@@ -31,12 +33,16 @@ def user_info_message(user, infos):
         if kgs_username is not None or ogs_username is not None:
             message += ':'
             if ogs_username is not None:
-                servers.append(' OGS | [{}](https://online-go.com/player/{}) ({})'.format(ogs_username, ogs_id, ogs_rank))
+                servers.append(' OGS | [{}](https://online-go.com/player/{}) ({})'.format(ogs_username,
+                                                                                          ogs_id,
+                                                                                          ogs_rank))
             if kgs_username is not None:
-                servers.append(' KGS | [{u}](http://www.gokgs.com/graphPage.jsp?user={u}) ({r})'.format(u=kgs_username,r=kgs_rank))
+                servers.append(' KGS | [{u}](http://www.gokgs.com/graphPage.jsp?user={u}) ({r})'.format(u=kgs_username,
+                                                                                                        r=kgs_rank))
         message += ' - '.join(servers)
     message += '\n'
     return message
+
 
 def user_rank(user, infos):
     message = ''
@@ -56,6 +62,7 @@ def user_rank(user, infos):
             message = '({0})'.format(message)
     return message
 
+
 def get_user(username, bot):
     role = discord.utils.get(bot.get_guild(guild_id).roles, id=member_role_id)
     if username[0] == "#":
@@ -65,3 +72,9 @@ def get_user(username, bot):
     if user is None:
         user = discord.utils.get(role.members, name=username)
     return user
+
+
+def add_footer(embed, user):
+    embed.set_footer(text="Requested by: {}#{}".format(user.name,
+                                                       user.discriminator),
+                     icon_url=user.avatar_url)
