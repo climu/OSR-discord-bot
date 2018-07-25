@@ -166,18 +166,18 @@ async def go(ctx, minutes=minutes_in_a_day):
     role = role_dict["role"]
     # no need to call get_user here because ctx.message.author is already a member instance
     user = ctx.message.author
-    infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
     expiration_time = datetime.now() + timedelta(minutes=minutes)
     expiration_times[ctx.author.id] = expiration_time
     if role in ctx.message.author.roles:
-        await ctx.send("Hey, <@&{}>! {} {} is desperately looking for a game.".format(str(role_dict["id"]),
-                                                                                      ctx.message.author.mention,
-                                                                                      user_rank(user, infos)))
+        await ctx.send("Hey, <@&{}>! {} is desperately looking for a game.".format(str(role_dict["id"]),
+                                                                                   ctx.message.author.mention))
     else:
         await ctx.message.author.add_roles(role)
-        await ctx.send("Hey, <@&{}>! {} {} is looking for a game.".format(str(role_dict["id"]),
-                                                                          ctx.message.author.mention,
-                                                                          user_rank(user, infos)))
+        await ctx.send("Hey, <@&{}>! {} is looking for a game.".format(str(role_dict["id"]),
+                                                                       ctx.message.author.mention))
+    info = get_user_info(user)
+    info.embed.set_author(name=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+    await info.send(ctx)
 
 
 @bot.command(pass_context=True)
