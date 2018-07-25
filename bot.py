@@ -9,8 +9,8 @@ from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 from typing import Dict, List, Tuple  # noqa
 
-from config import roles_dict, del_commands, minutes_in_a_day, guild_id, expiration_times, prefix
-from utils import *
+from config import roles_dict, del_commands, minutes_in_a_day, guild_id, expiration_times, prefix, channels
+from utils import add_footer, add_role, get_user, user_info_message, user_rank
 
 bot = commands.Bot(command_prefix=prefix)
 roles_are_set = False
@@ -49,9 +49,10 @@ class WhoMessage(SpecialMessage):
             idx = int(reaction.emoji[0]) - 1
 
             info = get_user_info(self.matches[idx])
-            info.embed.set_footer(text='Requested by: '+self.originator.name+'#'+self.originator.discriminator, icon_url=self.originator.avatar_url)
+            add_footer(info.embed, self.originator)
             await self.message.clear_reactions()
-            await self.message.edit(embed=None) #This needs to be here for some reason, else we get an extra name after edit...
+            # This needs to be here for some reason, else we get an extra name after edit...
+            await self.message.edit(embed=None)
             await self.message.edit(content=info.message, embed=info.embed)
             del SPECIAL_MESSAGES[self.message.id]
         except (ValueError, IndexError):
@@ -71,25 +72,29 @@ async def get_roles():
 @bot.event
 async def on_ready():
     """Display a message for which time was bot last updated."""
-    channel = bot.get_channel(463639475751354368)
-    msg = "<@" + str(461792018843172866) + "> was just deployed."
+    channel = bot.get_channel(channels["testing-bots"])
+    msg = "{} was just deployed.".format(bot.user.mention)
     await channel.send(msg)
+
 
 # When a new member joins, tag them in "welcome" channel and let them know of our bot
 @bot.event
 async def on_member_join(member):
-    welcome_ch = bot.get_channel(287537238445654016)
-    general_ch = bot.get_channel(287487891003932672)
-    bot_commands_ch = bot.get_channel(287868862559420429)
-    msg = "Welcome to OSR <@" + str(member.id) + ">! We are delighted to have you with us.\n"
-    msg += "I am here to assist you. You can either send me a private message or invoke my commands in the correct channels.\n"
-    msg += "Try, for example, to send `!help` to me, or type it in {} to see what I can do for you.\n".format(bot_commands_ch.mention)  # Bot commands
-    msg += "Otherwise, simply introduce yourself in {} or talk to any of our team members.\n".format(general_ch.mention)  # General
-    msg += "We hope that you enjoy your time with us! :  )"
-    message = await welcome_ch.send(msg)
+    welcome_ch = bot.get_channel(channels["welcome"])
+    general_ch = bot.get_channel(channels["general"])
+    bot_commands_ch = bot.get_channel(channels["bot-commands"])
+    msg = """Welcome to OSR {member}! We are delighted to have you with us.
+I am here to assist you. You can either send me a private message or invoke my commands in the correct channels.
+Try, for example, to send `!help` to me, or type it in {bot_commands} to see what I can do for you.
+Otherwise, simply introduce yourself in {general} or talk to any of our team members.
+We hope that you enjoy your time with us! :  )""".format(member=member.mention,
+                                                         bot_commands=bot_commands_ch.mention,
+                                                         general=general_ch.mention)
+    await welcome_ch.send(msg)
     # # Emojo not working :(
     # emoji = bot.get_emoji(465610558876418068)
     # await message.add_reaction(emoji=emoji)
+
 
 @bot.event
 async def on_message(message):
@@ -102,7 +107,8 @@ async def on_message(message):
             desc = "I am not currently programmed for the command: " + cmd + "\n\n"
             desc += "Please see the available commands by typing `!help`."
             embed = discord.Embed(title="Command " + cmd + " not found.", description=desc, color=0xeee657)
-            embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
+            embed.set_thumbnail(
+                url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
             await message.channel.send(embed=embed)
         return
 
@@ -158,16 +164,20 @@ async def go(ctx, minutes=minutes_in_a_day):
         return
 
     role = role_dict["role"]
-    #no need to call get_user here because ctx.message.author is already a member instance
+    # no need to call get_user here because ctx.message.author is already a member instance
     user = ctx.message.author
     infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
     expiration_time = datetime.now() + timedelta(minutes=minutes)
     expiration_times[ctx.author.id] = expiration_time
     if role in ctx.message.author.roles:
-        await ctx.send("Hey, <@&" + str(role_dict["id"]) + ">! " + ctx.message.author.mention + ' ' + user_rank(user, infos) + " is desperately looking for a game.")
+        await ctx.send("Hey, <@&{}>! {} {} is desperately looking for a game.".format(str(role_dict["id"]),
+                                                                                      ctx.message.author.mention,
+                                                                                      user_rank(user, infos)))
     else:
         await ctx.message.author.add_roles(role)
-        await ctx.send("Hey, <@&" + str(role_dict["id"]) + ">! " + ctx.message.author.mention + ' ' + user_rank(user, infos) + " is looking for a game.")
+        await ctx.send("Hey, <@&{}>! {} {} is looking for a game.".format(str(role_dict["id"]),
+                                                                          ctx.message.author.mention,
+                                                                          user_rank(user, infos)))
 
 
 @bot.command(pass_context=True)
@@ -194,6 +204,7 @@ async def tsumego(ctx):
 async def review(ctx):
     await add_role(ctx, 'review')
 
+
 @bot.command(pass_context=True)
 async def no(ctx, role_name):
     role_dict = roles_dict.get(role_name)
@@ -213,7 +224,8 @@ async def no(ctx, role_name):
 def get_user_info(user: discord.User) -> UnsentMessage:
     infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
     if not infos:
-        message = user.mention + ' was too lazy to link their OSR account with their discord. They just have to follow this [link](https://openstudyroom.org/discord/)!'
+        message = ('{} was too lazy to link their OSR account with their discord. '
+                   'They just have to follow this [link](https://openstudyroom.org/discord/)!').format(user.mention)
         embed = discord.Embed(title="Lazy " + user.name, description=message, color=0xeee657)
         return UnsentMessage("", embed)
     else:
@@ -229,7 +241,7 @@ async def who(ctx: commands.Context, username: str) -> None:
 
     if user is not None:
         info = get_user_info(user)
-        info.embed.set_footer(text='Requested by: '+ctx.message.author.name+'#'+ctx.message.author.discriminator, icon_url=ctx.message.author.avatar_url)
+        add_footer(info.embed, ctx.message.author)
         await info.send(ctx)
         return
 
@@ -244,7 +256,6 @@ async def who(ctx: commands.Context, username: str) -> None:
 
     # unlikely to get 5 with >70% match anyway...
     top_matches = [x for x in similarities[:5] if x[1] > 0.7]  # type: List[Tuple[discord.Member, float]]
-    no_top_matches = len(top_matches)
 
     uids = [x[0].id for x in top_matches]
     infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
@@ -264,7 +275,7 @@ async def who(ctx: commands.Context, username: str) -> None:
         message += "\n\n However, `" + username + "` is a valid role. Did you mean `!list " + username + "`?"
     nearest_or_sorry = '", nearest matches:' if top_matches else '", sorry'
     embed = discord.Embed(description=message, title='No users by the exact name "' + username + nearest_or_sorry)
-    embed.set_footer(text='Requested by: '+ctx.message.author.name+'#'+ctx.message.author.discriminator, icon_url=ctx.message.author.avatar_url)
+    add_footer(embed, ctx.message.author)
     msg = await ctx.send(embed=embed)
 
     for _i, match in enumerate(top_matches):  # type: Tuple[int, Tuple[discord.Member, float]]
@@ -292,13 +303,15 @@ async def whos(ctx, role_name):
         message = ''
         for user in users:
             message += user_info_message(user, infos)
-        title= "The following users are " + role_dict['verbose'] + ":"
+        title = "The following users are " + role_dict['verbose'] + ":"
         embed = discord.Embed(title=title, description=message)
-        embed.set_footer(text='Requested by: '+ctx.message.author.name+'#'+ctx.message.author.discriminator, icon_url=ctx.message.author.avatar_url)
+        add_footer(embed, ctx.message.author)
         await ctx.send(embed=embed)
 
     else:
-        await ctx.send("Sorry " + ctx.message.author.mention + ". Unfortunately, nobody is " + role_dict['verbose'] + " right now. :(")
+        await ctx.send("Sorry {}. Unfortunately, nobody is {} right now. :(".format(ctx.message.author.mention,
+                                                                                    role_dict['verbose']))
+
 
 @bot.command(pass_context=True)
 async def info(ctx):
@@ -314,18 +327,29 @@ async def help(ctx, subject=None):
     if subject is None:
         desc = "Help organise this discord channel. The following commands are available:"
         embed = discord.Embed(title="OSR Bot", description=desc, color=0xeee657)
-        embed.add_field(name="**!roles**", value="Display help file regarding the Discord OSR roles system.", inline=False)
-        embed.add_field(name="**!who [username or #discriminator]**", value="Get one user info: will give informations about a user given his nickname or discriminator. For instance, my discriminator is `#9501`.", inline=False)
+        embed.add_field(name="**!roles**",
+                        value="Display help file regarding the Discord OSR roles system.",
+                        inline=False)
+        embed.add_field(name="**!who [username or #discriminator]**",
+                        value=("Get one user info: will give informations about a user given his nickname or "
+                               "discriminator. For instance, "
+                               "my discriminator is `#{}`.").format(bot.user.discriminator),
+                        inline=False)
         embed.add_field(name="**!league**", value="Find out about OSR leagues.", inline=False)
-        embed.add_field(name="**!sensei [term]**", value="Display information for a term from Sensei's Library.", inline=False)
+        embed.add_field(name="**!sensei [term]**",
+                        value="Display information for a term from Sensei's Library.",
+                        inline=False)
         embed.add_field(name="**!info**", value="Gives a little info about the bot.", inline=False)
         embed.add_field(name="**!help**", value="Gives this message.", inline=False)
-        embed.add_field(name="**!help osr**", value="Find out how you can help with our community.", inline=False)
+        embed.add_field(name="**!help osr**",
+                        value="Find out how you can help with our community.",
+                        inline=False)
         await ctx.send(embed=embed)
     else:
         if subject == "osr":
             title = "I like this project. How can I help?"
-            message = ("There are many ways you can help the OSR project if you like to. Those include but are not limited to:\n" +
+            message = ("There are many ways you can help the OSR project if you like to. "
+                       "Those include but are not limited to:\n" +
                        " - Playing in our leagues.\n" +
                        " - Keeping OSR friendly and active.\n" +
                        " - Giving a couple of $/€ so we can pay for the server and set up quality teaching.\n" +
@@ -333,7 +357,6 @@ async def help(ctx, subject=None):
                        "You can find more details about that [here](https://openstudyroom.org/help-osr/).")
             embed = discord.Embed(title=title, description=message, color=0xeee657)
             await ctx.send(embed=embed)
-
 
 
 @bot.command(pass_context=True)
@@ -391,14 +414,20 @@ async def league(ctx, subject=None):
         desc += "- Players can play up to 3 games against the same opponent within the group.\n\n"
         desc += "- A win grants 1.5 points and a loss grants 0.5.\n\n"
         desc += "- Players who played at least 1 games will be added to the next league, once this one has ended.\n\n"
-        embed = discord.Embed(title="OSR Ladder (Monthly league)", description=desc, color=0xeee657, url="https://openstudyroom.org/league/ladder/")
+        embed = discord.Embed(title="OSR Ladder (Monthly league)",
+                              description=desc,
+                              color=0xeee657,
+                              url="https://openstudyroom.org/league/ladder/")
         await ctx.send(embed=embed)
     elif subject == "meijin":
         desc = "The following rules apply to the Meijin league.\n\n"
         desc += "- Players can play up to 5 games against the same opponent within the group.\n\n"
         desc += "- A win grants 1.5 points and a loss grants 0.5.\n\n"
         desc += "- Players who played at least 3 games will be automatically added to the next league, once this one has ended.\n\n"
-        embed = discord.Embed(title="Meijin League", description=desc, color=0xeee657, url="https://openstudyroom.org/league/meijin/")
+        embed = discord.Embed(title="Meijin League",
+                              description=desc,
+                              color=0xeee657,
+                              url="https://openstudyroom.org/league/meijin/")
         await ctx.send(embed=embed)
     elif subject == "ddk":
         desc = "The following rules apply to the DDK league.\n\n"
@@ -508,12 +537,12 @@ async def sensei(ctx, term=None):
                 match = re.search(regex, groups[index])
                 if match:
                     value += ("[{}](https://senseis.xmp.net/?" +
-                            "{})\n").format(match.group("term"),
-                           match.group("term_url"))
+                              "{})\n").format(match.group("term"),
+                                              match.group("term_url"))
 
             embed.add_field(name='Alternative search terms:',
-                                    value=value,
-                                    inline=False)
+                            value=value,
+                            inline=False)
         else:
             embed.add_field(name="Alternative search terms",
                             value="No alternative terms found.", inline=False)
