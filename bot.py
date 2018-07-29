@@ -109,6 +109,7 @@ async def on_message(message):
             embed = discord.Embed(title="Command " + cmd + " not found.", description=desc, color=0xeee657)
             embed.set_thumbnail(
                 url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
+            add_footer(embed, ctx.author)
             await message.channel.send(embed=embed)
         return
 
@@ -317,6 +318,7 @@ async def whos(ctx, role_name):
 async def info(ctx):
     desc = "Keeps track of who is currently looking for a game.\nhttps://github.com/climu/OSR-discord-bot"
     embed = discord.Embed(title="OSR bot", description=desc, color=0xeee657)
+    add_footer(embed, ctx.author)
     await ctx.send(embed=embed)
 
 bot.remove_command('help')
@@ -344,6 +346,7 @@ async def help(ctx, subject=None):
         embed.add_field(name="**!help osr**",
                         value="Find out how you can help with our community.",
                         inline=False)
+        add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
     else:
         if subject == "osr":
@@ -356,6 +359,7 @@ async def help(ctx, subject=None):
                        " - Help us run the community.\n" +
                        "You can find more details about that [here](https://openstudyroom.org/help-osr/).")
             embed = discord.Embed(title=title, description=message, color=0xeee657)
+            add_footer(embed, ctx.author)
             await ctx.send(embed=embed)
 
 
@@ -371,6 +375,7 @@ async def roles(ctx):
     embed.add_field(name="Add a role", value=value, inline=False)
     embed.add_field(name="Remove a role", value="**!no [role]**: will remove the role. For instance, `!no go` will remove you from the `@player` role", inline=False)
     embed.add_field(name="List all online users in with a specific role", value="**!list [role]**: will list all online users with the said role. For instance `!list tsumego` will list all online users of the `@tsumego` role.", inline=False)
+    add_footer(embed, ctx.author)
     await ctx.send(embed=embed)
 
 
@@ -390,6 +395,7 @@ async def league(ctx, subject=None):
         embed.add_field(name="**rules**", value="Global league rules", inline=True)
         embed.add_field(name="**join**", value="Joining our leagues", inline=True)
         embed.add_field(name="**faq**", value="Frequently asked questions", inline=True)
+        add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
     elif subject == "rules":
         desc = "The following rules apply to all league games. Individual leagues may have their own rules."
@@ -408,6 +414,7 @@ async def league(ctx, subject=None):
         value = "Players are strongly encouraged to review the game afterwards. If the players have similar rank, or if your opponent can't help you reviewing your game, one should feel free to ask stronger players in our Discord channel and/or in our KGS room to help with the review.\n\n"
         value += "Should you have any questions, or you've played a game that doesn't strictly cohere with all the rules, feel free to ask a member of our team for help.\n"
         embed.add_field(name="Additional information", value=value, inline=False)
+        add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
     elif subject == "ladder" or subject == "monthly":
         desc = "The following rules apply to the OSR Ladder.\n\n"
@@ -418,6 +425,7 @@ async def league(ctx, subject=None):
                               description=desc,
                               color=0xeee657,
                               url="https://openstudyroom.org/league/ladder/")
+        add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
     elif subject == "meijin":
         desc = "The following rules apply to the Meijin league.\n\n"
@@ -428,6 +436,7 @@ async def league(ctx, subject=None):
                               description=desc,
                               color=0xeee657,
                               url="https://openstudyroom.org/league/meijin/")
+        add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
     elif subject == "ddk":
         desc = "The following rules apply to the DDK league.\n\n"
@@ -435,6 +444,7 @@ async def league(ctx, subject=None):
         desc += "- A win grants 1.5 points and a loss grants 0.5.\n\n"
         desc += "- Players who played at least 1 games will be added to the next league, once this one has ended.\n\n"
         embed = discord.Embed(title="DDK League", description=desc, color=0xeee657, url="https://openstudyroom.org/league/ddk/")
+        add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
     elif subject == "dan":
         desc = "The following rules apply to the Dan league.\n\n"
@@ -442,6 +452,7 @@ async def league(ctx, subject=None):
         desc += "- A win grants 1.5 points and a loss grants 0.5.\n\n"
         desc += "- Players who played at least 1 games will be added to the next league, once this one has ended.\n\n"
         embed = discord.Embed(title="Dan League", description=desc, color=0xeee657, url="https://openstudyroom.org/league/dan/")
+        add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
     elif subject == "join":
         desc = "With the exception of the **Meijin League**, you need to manually join the league you wish.\n\n"
@@ -451,6 +462,7 @@ async def league(ctx, subject=None):
         desc += "An example of this is presented in the image below for the **Dan League**.\n\n"
         embed = discord.Embed(title="Joining any of the OSR Leagues", description=desc, color=0xeee657)
         embed.set_image(url="https://cdn.discordapp.com/attachments/464175979406032897/464909106520522764/join_osr_league_annotated.png")
+        add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
     elif subject == "faq":
         desc = "You can always ask one of our team members, but here is a small FAQ."
@@ -476,11 +488,13 @@ async def league(ctx, subject=None):
         answer += ("Please note that we do not want to insult anyone and the" +
                    " any problem will be dealt with discretly.")
         embed.add_field(name=question, value=answer, inline=False)
+        add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
     else:
         desc = "I am not currently programmed for the command: **" + subject + "**"
         embed = discord.Embed(title="Unknown command", description=desc, color=0xeee657)
         embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
+        add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
 
 
@@ -492,6 +506,7 @@ async def sensei(ctx, term=None):
         embed = discord.Embed(title="Please add a search term",
                               description=message, color=0xeee657)
         embed.set_thumbnail(url="https://senseis.xmp.net/images/stone-hello.png")
+        add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
     else:
         s = requests.Session()
@@ -546,6 +561,7 @@ async def sensei(ctx, term=None):
         else:
             embed.add_field(name="Alternative search terms",
                             value="No alternative terms found.", inline=False)
+        add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
 
 
