@@ -75,7 +75,8 @@ del_commands = [
     "roles",
     "sensei",
     "define",
-    "scary"
+    "scary",
+    "quote"
 ]
 
 minutes_in_a_day = 1440

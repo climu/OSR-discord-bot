@@ -498,6 +498,24 @@ async def league(ctx, subject=None):
         await ctx.send(embed=embed)
 
 
+@bot.command(pass_context=True, aliases=["Quote"])
+async def quote(ctx, msg_id, *resp):
+    """Take message ID and response and create a quote."""
+    str_resp = ' '.join(resp)
+    """Take a message ID as input and convert it to an embed with quoted text."""
+    message = await ctx.get_message(msg_id)
+
+    await ctx.send(message.author.mention)
+    embed = discord.Embed(description=str_resp, color=0x63b6f3)
+    embed.set_author(name=ctx.author.name + " replied:", icon_url=ctx.author.avatar_url)
+    embed.set_thumbnail(url='https://www.shareicon.net/data/64x64/2016/07/10/119195_chat_512x512.png')
+
+    embed.add_field(name="In response to:",
+                    value=message.author.mention + ": " + message.content,
+                    inline=True)
+    await ctx.send(embed=embed)
+
+
 @bot.command(pass_context=True, aliases=["define"])
 async def sensei(ctx, term=None):
     """Get information from Sensei's Library."""

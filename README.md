@@ -11,6 +11,8 @@ The most basic commands to get our users going are listed below:
 
 !sensei [term] - Displays the first paragraph for a specified term from Sensei's Library
 
+!quote [id] [response] -  Quotes a message using a specific message ID and responds to the message author.
+
 !info - Basic info about the bot.
 
 !help - A more detailed list of commands.
