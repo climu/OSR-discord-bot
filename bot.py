@@ -80,20 +80,19 @@ async def on_ready():
 # When a new member joins, tag them in "welcome" channel and let them know of our bot
 @bot.event
 async def on_member_join(member):
-    welcome_ch = bot.get_channel(channels["welcome"])
-    general_ch = bot.get_channel(channels["general"])
-    bot_commands_ch = bot.get_channel(channels["bot-commands"])
-    msg = """Welcome to OSR {member}! We are delighted to have you with us.
-I am here to assist you. You can either send me a private message or invoke my commands in the correct channels.
-Try, for example, to send `!help` to me, or type it in {bot_commands} to see what I can do for you.
-Otherwise, simply introduce yourself in {general} or talk to any of our team members.
-We hope that you enjoy your time with us! :  )""".format(member=member.mention,
-                                                         bot_commands=bot_commands_ch.mention,
-                                                         general=general_ch.mention)
-    await welcome_ch.send(msg)
-    # # Emojo not working :(
-    # emoji = bot.get_emoji(465610558876418068)
-    # await message.add_reaction(emoji=emoji)
+    """On member join, display welcome message."""
+    if bot.user.name != "OSR Bot":
+        welcome_ch = bot.get_channel(channels["welcome"])
+        general_ch = bot.get_channel(channels["general"])
+        bot_commands_ch = bot.get_channel(channels["bot-commands"])
+        msg = """Welcome to OSR {member}! We are delighted to have you with us.
+    I am here to assist you. You can either send me a private message or invoke my commands in the correct channels.
+    Try, for example, to send `!help` to me, or type it in {bot_commands} to see what I can do for you.
+    Otherwise, simply introduce yourself in {general} or talk to any of our team members.
+    We hope that you enjoy your time with us! :  )""".format(member=member.mention,
+                                                             bot_commands=bot_commands_ch.mention,
+                                                             general=general_ch.mention)
+        await welcome_ch.send(msg)
 
 
 @bot.event
@@ -496,6 +495,24 @@ async def league(ctx, subject=None):
         embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
         add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
+
+
+@bot.command(pass_context=True, aliases=["Quote"])
+async def quote(ctx, msg_id, *resp):
+    """Take message ID and response and create a quote."""
+    str_resp = ' '.join(resp)
+    """Take a message ID as input and convert it to an embed with quoted text."""
+    message = await ctx.get_message(msg_id)
+
+    await ctx.send(message.author.mention)
+    embed = discord.Embed(description=str_resp, color=0x63b6f3)
+    embed.set_author(name=ctx.author.name + " replied:", icon_url=ctx.author.avatar_url)
+    embed.set_thumbnail(url='https://www.shareicon.net/data/64x64/2016/07/10/119195_chat_512x512.png')
+
+    embed.add_field(name="In response to:",
+                    value=message.author.mention + ": " + message.content,
+                    inline=True)
+    await ctx.send(embed=embed)
 
 
 @bot.command(pass_context=True, aliases=["define"])

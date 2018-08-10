@@ -11,9 +11,11 @@ The most basic commands to get our users going are listed below:
 
 !sensei [term] - Displays the first paragraph for a specified term from Sensei's Library
 
+!quote [id] [response] -  Quotes a message using a specific message ID and responds to the message author.
+
 !info - Basic info about the bot.
 
 !help - A more detailed list of commands.
 ```
 
-To run it, you'll need to provide your own bot token, to be pulled from your shell's environment variables (`LFG_TOKEN`). In my case, I added `export LFG_TOKEN="my-token-here"` to `~/.zshenv` (since I use Z Shell).
+To run it, you'll need to provide your own bot token, to be pulled from your shell's environment variables (`LFG_TOKEN`). Add `export LFG_TOKEN="my-token-here"` to `~/.zshenv` (if you use Z Shell) or simply add it to your Windows environment variables.
