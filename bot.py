@@ -80,20 +80,19 @@ async def on_ready():
 # When a new member joins, tag them in "welcome" channel and let them know of our bot
 @bot.event
 async def on_member_join(member):
-    welcome_ch = bot.get_channel(channels["welcome"])
-    general_ch = bot.get_channel(channels["general"])
-    bot_commands_ch = bot.get_channel(channels["bot-commands"])
-    msg = """Welcome to OSR {member}! We are delighted to have you with us.
-I am here to assist you. You can either send me a private message or invoke my commands in the correct channels.
-Try, for example, to send `!help` to me, or type it in {bot_commands} to see what I can do for you.
-Otherwise, simply introduce yourself in {general} or talk to any of our team members.
-We hope that you enjoy your time with us! :  )""".format(member=member.mention,
-                                                         bot_commands=bot_commands_ch.mention,
-                                                         general=general_ch.mention)
-    await welcome_ch.send(msg)
-    # # Emojo not working :(
-    # emoji = bot.get_emoji(465610558876418068)
-    # await message.add_reaction(emoji=emoji)
+    """On member join, display welcome message."""
+    if bot.user.name != "OSR Bot":
+        welcome_ch = bot.get_channel(channels["welcome"])
+        general_ch = bot.get_channel(channels["general"])
+        bot_commands_ch = bot.get_channel(channels["bot-commands"])
+        msg = """Welcome to OSR {member}! We are delighted to have you with us.
+    I am here to assist you. You can either send me a private message or invoke my commands in the correct channels.
+    Try, for example, to send `!help` to me, or type it in {bot_commands} to see what I can do for you.
+    Otherwise, simply introduce yourself in {general} or talk to any of our team members.
+    We hope that you enjoy your time with us! :  )""".format(member=member.mention,
+                                                             bot_commands=bot_commands_ch.mention,
+                                                             general=general_ch.mention)
+        await welcome_ch.send(msg)
 
 
 @bot.event
