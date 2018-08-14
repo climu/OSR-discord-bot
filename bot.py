@@ -90,6 +90,7 @@ async def on_member_join(member):
     I am here to assist you. You can either send me a private message or invoke my commands in the correct channels.
     Try, for example, to send `!help` to me, or type it in {bot_commands} to see what I can do for you.
     Otherwise, simply introduce yourself in {general} or talk to any of our team members.
+    Finally, you can find out more about Open Study Room at https://openstudyroom.org/
     We hope that you enjoy your time with us! :  )""".format(member=member.mention,
                                                              bot_commands=bot_commands_ch.mention,
                                                              general=general_ch.mention)
