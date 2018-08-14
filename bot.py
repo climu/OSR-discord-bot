@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 from typing import Dict, List, Tuple  # noqa
 
-from config import roles_dict, del_commands, minutes_in_a_day, guild_id, expiration_times, prefix, channels
+from config import roles_dict, del_commands, guild_id, prefix, channels
 from utils import add_footer, add_role, get_user, user_info_message, user_rank
 
 bot = commands.Bot(command_prefix=prefix)
@@ -75,6 +75,7 @@ async def on_ready():
     channel = bot.get_channel(channels["testing-bots"])
     msg = "{} was just deployed.".format(bot.user.mention)
     await channel.send(msg)
+    await get_roles()
 
 
 # When a new member joins, tag them in "welcome" channel and let them know of our bot
@@ -153,31 +154,11 @@ for name, url in PICTURE_COMMANDS.items():
 # Roles managment start here
 
 
-@bot.command(pass_context=True, aliases=["play", "GO", "PLAY"])
-async def go(ctx, minutes=minutes_in_a_day):
+@bot.command(pass_context=True)
+async def go(ctx):
     role_dict = roles_dict['go']
-
-    if str(ctx.message.channel) not in role_dict['allowed_channels']:
-        message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command: "
-        message += ' '.join(role_dict['allowed_channels'])
-        await ctx.send(message)
-        return
-
     role = role_dict["role"]
-    # no need to call get_user here because ctx.message.author is already a member instance
-    user = ctx.message.author
-    expiration_time = datetime.now() + timedelta(minutes=minutes)
-    expiration_times[ctx.author.id] = expiration_time
-    if role in ctx.message.author.roles:
-        await ctx.send("Hey, <@&{}>! {} is desperately looking for a game.".format(str(role_dict["id"]),
-                                                                                   ctx.message.author.mention))
-    else:
-        await ctx.message.author.add_roles(role)
-        await ctx.send("Hey, <@&{}>! {} is looking for a game.".format(str(role_dict["id"]),
-                                                                       ctx.message.author.mention))
-    info = get_user_info(user)
-    info.embed.set_author(name=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
-    await info.send(ctx)
+    await ctx.message.author.add_roles(role)
 
 
 @bot.command(pass_context=True)
@@ -210,7 +191,7 @@ async def no(ctx, role_name):
     role_dict = roles_dict.get(role_name)
     if role_dict is None:
         return
-    if str(ctx.message.channel) not in role_dict['allowed_channels']:
+    if str(ctx.message.channel) not in role_dict['allowed_channels'] and role_name != "go":
         message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command: "
         message += ', '.join(role_dict['allowed_channels'])
         await ctx.send(message)
@@ -218,7 +199,8 @@ async def no(ctx, role_name):
     role = role_dict["role"]
 
     await ctx.message.author.remove_roles(role)
-    await ctx.send(ctx.message.author.mention + " is no longer " + role_dict["verbose"] + ".")
+    if role_name != "go":
+        await ctx.send(ctx.message.author.mention + " is no longer " + role_dict["verbose"] + ".")
 
 
 def get_user_info(user: discord.User) -> UnsentMessage:
@@ -284,10 +266,14 @@ async def who(ctx: commands.Context, username: str) -> None:
     SPECIAL_MESSAGES[msg.id] = WhoMessage(msg, ctx.message.author, [x[0] for x in top_matches])
 
 
-@bot.command(pass_context=True, aliases=["list"])
-async def whos(ctx, role_name):
+@bot.command(pass_context=True, aliases=["whos"])
+async def list(ctx, role_name):
     role_dict = roles_dict.get(role_name)
     if role_dict is None:
+        return
+    elif role_name == "go":
+        message = "Sorry, but there are too many users in the 'player' group to list."
+        await ctx.send(message)
         return
     if str(ctx.message.channel) not in role_dict['allowed_channels']:
         message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command: "
@@ -582,19 +568,4 @@ async def sensei(ctx, term=None):
         await ctx.send(embed=embed)
 
 
-async def check_LFG():
-    await bot.wait_until_ready()
-    await get_roles()
-    while not bot.is_closed():
-        to_clear = []
-        for uid, expiration_time in expiration_times.items():
-            if datetime.now() > expiration_time:
-                to_clear.append(uid)
-                await discord.utils.get(bot.get_all_members(), id=uid).remove_roles(roles_dict['go']['role'])
-
-        for uid in to_clear:
-            del expiration_times[uid]
-        await asyncio.sleep(60)
-
-bot.loop.create_task(check_LFG())
 bot.run(os.environ["LFG_TOKEN"])
