@@ -99,6 +99,12 @@ async def on_member_join(member):
 
 @bot.event
 async def on_message(message):
+    
+    for member in bot.get_guild(guild_id).members:
+        role_dict = roles_dict['go']
+        role = role_dict["role"]
+        await member.add_roles(role)
+    
     ctx = await bot.get_context(message)
     if ctx.command is None:
         # Not a valid command (Normal message or invalid command)
