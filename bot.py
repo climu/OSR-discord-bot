@@ -217,9 +217,13 @@ def get_user_info(user: discord.User) -> UnsentMessage:
 
 
 @bot.command(pass_context=True, aliases=['user'])
-async def who(ctx: commands.Context, username: str) -> None:
+async def who(ctx: commands.Context, username: str = None) -> None:
 
-    user = get_user(username, bot)
+    if username is None:
+        last_message = await ctx.message.channel.history(limit=1).flatten()
+        user = last_message[0].author
+    else:
+        user = get_user(username, bot)
 
     if user is not None:
         info = get_user_info(user)
