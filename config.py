@@ -78,6 +78,3 @@ del_commands = [
     "scary",
     "quote"
 ]
-
-minutes_in_a_day = 1440
-expiration_times = {}
