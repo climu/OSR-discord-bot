@@ -81,7 +81,7 @@ async def on_ready():
 # When a new member joins, tag them in "welcome" channel and let them know of our bot
 @bot.event
 async def on_member_join(member):
-    """On member join, display welcome message."""
+    """On member join, display welcome message and add the player role."""
     if bot.user.name != "OSR Bot":
         welcome_ch = bot.get_channel(channels["welcome"])
         general_ch = bot.get_channel(channels["general"])
@@ -95,16 +95,13 @@ async def on_member_join(member):
                                                              bot_commands=bot_commands_ch.mention,
                                                              general=general_ch.mention)
         await welcome_ch.send(msg)
+        role_dict = roles_dict['go']
+        role = role_dict["role"]
+        await member.add_roles(role)
 
 
 @bot.event
 async def on_message(message):
-    
-    for member in bot.get_guild(guild_id).members:
-        role_dict = roles_dict['go']
-        role = role_dict["role"]
-        await member.add_roles(role)
-    
     ctx = await bot.get_context(message)
     if ctx.command is None:
         # Not a valid command (Normal message or invalid command)
@@ -160,12 +157,9 @@ for name, url in PICTURE_COMMANDS.items():
 
 # Roles managment start here
 
-
 @bot.command(pass_context=True)
 async def go(ctx):
-    role_dict = roles_dict['go']
-    role = role_dict["role"]
-    await ctx.message.author.add_roles(role)
+    await add_role(ctx, 'go')
 
 
 @bot.command(pass_context=True)
@@ -198,7 +192,7 @@ async def no(ctx, role_name):
     role_dict = roles_dict.get(role_name)
     if role_dict is None:
         return
-    if str(ctx.message.channel) not in role_dict['allowed_channels'] and role_name != "go":
+    if str(ctx.message.channel) not in role_dict['allowed_channels']:
         message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command: "
         message += ', '.join(role_dict['allowed_channels'])
         await ctx.send(message)
@@ -206,8 +200,7 @@ async def no(ctx, role_name):
     role = role_dict["role"]
 
     await ctx.message.author.remove_roles(role)
-    if role_name != "go":
-        await ctx.send(ctx.message.author.mention + " is no longer " + role_dict["verbose"] + ".")
+    await ctx.send(ctx.message.author.mention + " is no longer " + role_dict["verbose"] + ".")
 
 
 def get_user_info(user: discord.User) -> UnsentMessage:
@@ -278,10 +271,7 @@ async def list(ctx, role_name):
     role_dict = roles_dict.get(role_name)
     if role_dict is None:
         return
-    elif role_name == "go":
-        message = "Sorry, but there are too many users in the 'player' group to list."
-        await ctx.send(message)
-        return
+
     if str(ctx.message.channel) not in role_dict['allowed_channels']:
         message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command: "
         message += ' '.join(role_dict['allowed_channels'])
@@ -291,6 +281,11 @@ async def list(ctx, role_name):
 
     users = [x for x in role.members if str(x.status) == "online"]
     if len(users) > 0:
+        if len(users) > 15:
+            message = "Sorry, but there are too many users in the" + role_name + " group to list."
+            await ctx.send(message)
+            return
+
         uids = [member.id for member in users]
         infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
         message = ''
@@ -308,7 +303,7 @@ async def list(ctx, role_name):
 
 @bot.command(pass_context=True)
 async def info(ctx):
-    desc = "Keeps track of who is currently looking for a game.\nhttps://github.com/climu/OSR-discord-bot"
+    desc = "Help manage the OSR discord.\nhttps://github.com/climu/OSR-discord-bot"
     embed = discord.Embed(title="OSR bot", description=desc, color=0xeee657)
     add_footer(embed, ctx.author)
     await ctx.send(embed=embed)
