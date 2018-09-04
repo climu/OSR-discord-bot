@@ -86,10 +86,12 @@ async def on_member_join(member):
         welcome_ch = bot.get_channel(channels["welcome"])
         general_ch = bot.get_channel(channels["general"])
         bot_commands_ch = bot.get_channel(channels["bot-commands"])
-        msg = """Welcome to OSR {member}! We are delighted to have you with us.
+        msg = """Welcome to OSR {member}! We are delighted to have you with us.\n
     I am here to assist you. You can either send me a private message or invoke my commands in the correct channels.
     Try, for example, to send `!help` to me, or type it in {bot_commands} to see what I can do for you.
-    Otherwise, simply introduce yourself in {general} or talk to any of our team members.
+    Otherwise, simply introduce yourself in {general} or talk to any of our team members.\n
+    You have been assigned the "player" role meaning you are interested in playing go games.
+    If you don't like that, you can always remove yourself the role byt typing `!no go`.\n
     Finally, you can find out more about Open Study Room at https://openstudyroom.org/
     We hope that you enjoy your time with us! :  )""".format(member=member.mention,
                                                              bot_commands=bot_commands_ch.mention,
