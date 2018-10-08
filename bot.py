@@ -190,6 +190,11 @@ async def review(ctx):
 
 
 @bot.command(pass_context=True)
+async def rengo(ctx):
+    await add_role(ctx, 'rengo')
+
+
+@bot.command(pass_context=True)
 async def no(ctx, role_name):
     role_dict = roles_dict.get(role_name)
     if role_dict is None:
