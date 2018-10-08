@@ -32,6 +32,11 @@ roles_dict = {
         "allowed_channels": ["general", "game_discussion", "bot-commands", "testing-bots"],
         "verbose": "double digit kyu player",
     },
+    'rengo': {
+        "id": 498902129956618250,
+        "allowed_channels": ["general", "game_discussion", "bot-commands", "testing-bots", "go-variants", "pair_go"],
+        "verbose": "interested in rengo games",
+    },
 }
 
 channels = {
@@ -76,5 +81,6 @@ del_commands = [
     "sensei",
     "define",
     "scary",
-    "quote"
+    "quote",
+    "rengo"
 ]
