@@ -34,7 +34,7 @@ roles_dict = {
     },
     'rengo': {
         "id": 498902129956618250,
-        "allowed_channels": ["general", "game_discussion", "bot-commands", "testing-bots", "go-variants", "pair_go"],
+        "allowed_channels": ["general", "game_discussion", "bot-commands", "testing-bots", "go-variants", "rengo"],
         "verbose": "interested in rengo games",
     },
 }
