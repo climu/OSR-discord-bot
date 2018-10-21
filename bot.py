@@ -195,6 +195,11 @@ async def rengo(ctx):
 
 
 @bot.command(pass_context=True)
+async def goquest(ctx):
+    await add_role(ctx, 'goquest')
+
+
+@bot.command(pass_context=True)
 async def no(ctx, role_name):
     role_dict = roles_dict.get(role_name)
     if role_dict is None:
