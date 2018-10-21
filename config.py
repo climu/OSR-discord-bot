@@ -87,5 +87,6 @@ del_commands = [
     "define",
     "scary",
     "quote",
-    "rengo"
+    "rengo",
+    "goquest"
 ]
