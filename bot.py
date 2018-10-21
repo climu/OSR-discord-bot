@@ -133,7 +133,7 @@ PICTURE_COMMANDS = {
         "cho": "https://cdn.discordapp.com/attachments/456532168370290695/461802038276390923/cho.png",
         "cho_hug": "https://cdn.discordapp.com/attachments/430062036903395329/444192620504416268/WroCzKKKj7o.png",
         "chang_ho": "https://cdn.discordapp.com/attachments/430062036903395329/432619582054858806/153746110828-nong01.png",
-        "yuta": "https://cdn.discordapp.com/attachments/430062036903395329/432619582054858806/153746110828-nong01.png",
+        "yuta": "https://cdn.discordapp.com/attachments/287487891003932672/461811731359072259/vfcp43js2.png",
         "kj_facepalm": "https://cdn.discordapp.com/attachments/366870031285616651/461813881900236821/iozlnkjg.png",
         "scary": "https://cdn.discordapp.com/attachments/463639475751354368/467077666298789908/Head.png"
         }
@@ -298,7 +298,7 @@ async def list(ctx, role_name):
     users = [x for x in role.members if str(x.status) == "online"]
     if len(users) > 0:
         if len(users) > 15:
-            message = "Sorry, but there are too many users in the" + role_name + " group to list."
+            message = "Sorry, but there are too many users in the " + role_name + " group to list."
             await ctx.send(message)
             return
 
