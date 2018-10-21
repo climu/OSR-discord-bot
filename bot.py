@@ -298,7 +298,7 @@ async def list(ctx, role_name):
     users = [x for x in role.members if str(x.status) == "online"]
     if len(users) > 0:
         if len(users) > 15:
-            message = "Sorry, but there are too many users in the" + role_name + " group to list."
+            message = "Sorry, but there are too many users in the " + role_name + " group to list."
             await ctx.send(message)
             return
 
