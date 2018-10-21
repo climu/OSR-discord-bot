@@ -24,12 +24,16 @@ def user_info_message(user, infos):
     message = '**' + user.name + '**'
     info = infos.get(str(user.id))
     if info is not None:
+        osr_username = info.get('osr_username')
         kgs_username = info.get('kgs_username')
         kgs_rank = info.get('kgs_rank')
         ogs_username = info.get('ogs_username')
         ogs_rank = info.get('ogs_rank')
         ogs_id = info.get('ogs_id')
         servers = []
+        servers.append(' OSR | [{}](https://openstudyroom.org/league/account/{}/)'.format(osr_username,
+                                                                                          osr_username))
+
         if kgs_username is not None or ogs_username is not None:
             message += ':'
             if ogs_username is not None:
