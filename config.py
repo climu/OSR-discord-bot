@@ -37,6 +37,11 @@ roles_dict = {
         "allowed_channels": ["general", "game_discussion", "bot-commands", "testing-bots", "go-variants", "rengo"],
         "verbose": "interested in rengo games",
     },
+    'goquest': {
+        "id": 503493877907587072,
+        "allowed_channels": ["general", "game_discussion", "bot-commands", "testing-bots", "go-variants", "go_server_war"],
+        "verbose": "interested in GoQuest games",
+    },
 }
 
 channels = {
