@@ -25,6 +25,7 @@ def user_info_message(user, infos):
     info = infos.get(str(user.id))
     if info is not None:
         osr_username = info.get('osr_username')
+        leagues = info.get('leagues')
         kgs_username = info.get('kgs_username')
         kgs_rank = info.get('kgs_rank')
         ogs_username = info.get('ogs_username')
@@ -44,6 +45,10 @@ def user_info_message(user, infos):
                 servers.append(' KGS | [{u}](http://www.gokgs.com/graphPage.jsp?user={u}) ({r})'.format(u=kgs_username,
                                                                                                         r=kgs_rank))
         message += ' - '.join(servers)
+
+        if leagues is not None:
+            message += '\n\n_Registered leagues_: ' + ' - '.join(leagues)
+
     message += '\n'
     return message
 
