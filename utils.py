@@ -52,7 +52,7 @@ def user_info_message(user, infos):
             for league in leagues:
                 message_lg.append('[{n}](https://openstudyroom.org/league/{id}) '.format(n=league['name'],
                                                                                          id=league['id']))
-             message += ' - '.join(message_lg)
+            message += ' - '.join(message_lg)
 
     message += '\n'
     return message
