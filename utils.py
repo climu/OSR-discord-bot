@@ -47,7 +47,10 @@ def user_info_message(user, infos):
         message += ' - '.join(servers)
 
         if leagues is not None:
-            message += '\n\n_Registered leagues_: ' + ' - '.join(leagues)
+            message += '\n\n_Registered leagues_: '
+            for league in leagues:
+                message += '[{n}](https://openstudyroom.org/league/{id})'.format(n=league['name'],
+                                                                                 id=league['id'])
 
     message += '\n'
     return message
