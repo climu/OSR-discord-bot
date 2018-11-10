@@ -295,7 +295,9 @@ async def list(ctx, role_name):
         return
     role = role_dict["role"]
 
-    users = [x for x in role.members if str(x.status) == "online"]
+    online_users = [x for x in role.members if str(x.status) == "online"]
+    idle_users = [y for y in role.members if str(y.status) == "idle"]
+    users = online_users
     if len(users) > 0:
         if len(users) > 15:
             message = "Sorry, but there are too many users in the " + role_name + " group to list."
@@ -305,12 +307,27 @@ async def list(ctx, role_name):
         uids = [member.id for member in users]
         infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
         message = ''
+        message2 = ''
         for user in users:
-            message += user_info_message(user, infos)
+            new_user_message = user_info_message(user, infos)
+            if len(message) + len(new_user_message) < 2048:
+                message += new_user_message
+            else:
+                message2 += new_user_message
+        if message2 == '':
+            message += "*" + str(len(idle_users)) + " more users are idle.*"
+        else:
+            message2 += "*" + str(len(idle_users)) + " more users are idle.*"
+
         title = "The following users are " + role_dict['verbose'] + ":"
         embed = discord.Embed(title=title, description=message)
         add_footer(embed, ctx.message.author)
         await ctx.send(embed=embed)
+
+        if message2 != '':
+            embed = discord.Embed(description=message2)
+            add_footer(embed, ctx.message.author)
+            await ctx.send(embed=embed)
 
     else:
         await ctx.send("Sorry {}. Unfortunately, nobody is {} right now. :(".format(ctx.message.author.mention,
