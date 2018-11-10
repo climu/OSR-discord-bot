@@ -48,13 +48,13 @@ def user_info_message(user, infos):
 
         message_lg = []
         if leagues is not None:
-            message += '\n\n_Registered leagues_: '
+            message += '\n_Registered leagues_: '
             for league in leagues:
                 message_lg.append('[{n}](https://openstudyroom.org/league/{id}) '.format(n=league['name'],
                                                                                          id=league['id']))
             message += ' - '.join(message_lg)
 
-    message += '\n'
+    message += '\n\n'
     return message
 
 
