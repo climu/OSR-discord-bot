@@ -617,5 +617,5 @@ async def check_KGS():
         await kgs.get_messages(bot)
         await asyncio.sleep(2)
 
-bot.loop.create_task(check_KGS())
+#bot.loop.create_task(check_KGS())
 bot.run(os.environ["LFG_TOKEN"])
