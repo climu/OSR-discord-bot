@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 from typing import Dict, List, Tuple  # noqa
 
-from config import roles_dict, del_commands, guild_id, prefix, channels, init_globals
+from config import roles_dict, del_commands, guild_id, prefix, channels
 from utils import add_footer, add_role, get_user, user_info_message, user_rank
 
 
