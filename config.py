@@ -1,6 +1,7 @@
 guild_id = 287487891003932672
 prefix = "!"
 
+
 roles_dict = {
     'go': {
         "id": 433023079183286282,
@@ -92,7 +93,7 @@ del_commands = [
     "goquest"
 ]
 
-def init_globals():
-    """ init global variables https://stackoverflow.com/a/13034908"""
-    global announced_games
-    announced_games = []
+#def init_globals():
+#    """ init global variables https://stackoverflow.com/a/13034908"""
+#    global announced_games
+#    announced_games = []
