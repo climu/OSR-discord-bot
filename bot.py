@@ -5,12 +5,14 @@ from datetime import datetime, timedelta
 import asyncio
 import requests
 import re
+import kgs
 from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 from typing import Dict, List, Tuple  # noqa
 
-from config import roles_dict, del_commands, guild_id, prefix, channels
+from config import roles_dict, del_commands, guild_id, prefix, channels, init_globals
 from utils import add_footer, add_role, get_user, user_info_message, user_rank
+
 
 bot = commands.Bot(command_prefix=prefix)
 roles_are_set = False
@@ -602,5 +604,13 @@ async def sensei(ctx, term=None):
         add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
 
+async def check_KGS():
+    await bot.wait_until_ready()
+    await kgs.login()
+    # init_globals()
+    while not bot.is_closed == True:
+        await kgs.get_messages(bot)
+        await asyncio.sleep(5)
 
+bot.loop.create_task(check_KGS())
 bot.run(os.environ["LFG_TOKEN"])

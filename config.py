@@ -48,7 +48,8 @@ channels = {
     "welcome": 287537238445654016,
     "testing-bots": 463639475751354368,
     "general": 287487891003932672,
-    "bot-commands": 287868862559420429
+    "bot-commands": 287868862559420429,
+    "kgs": 515865606923485184
 }
 
 member_role_id = 287489624014585866
@@ -90,3 +91,8 @@ del_commands = [
     "rengo",
     "goquest"
 ]
+
+def init_globals():
+    """ init global variables https://stackoverflow.com/a/13034908"""
+    global announced_games
+    announced_games = []
