@@ -27,9 +27,7 @@ async def logout():
 
 async def get_messages(bot):
     r = s.get(kgs_url)
-    print(r.status_code)
     if not 'messages' in json.loads(r.text):
-        print(r.text)
         return
     for m in json.loads(r.text)['messages']:
         if m['type'] == 'LOGOUT':
