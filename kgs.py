@@ -76,7 +76,7 @@ async def handle_messages(session, bot, json):
                     # have the game ended?
                     if 'score' in game:
                         if game['channelId'] not in kgs_games['ended']:
-                            text = "Game " + formated_name(game['players']['white']) + "(W)" +\
+                            text = "Game " + formated_name(game['players']['white']) + "(W) Vs " +\
                                 formated_name(game['players']['black']) + " (B): "
                             text += result(game['score'])
                             await send_discord_message(text, bot)
@@ -84,8 +84,8 @@ async def handle_messages(session, bot, json):
 
                     elif game['channelId'] not in kgs_games['ongoing']:
                         #game is not ended
-                        text = "Game " + formated_name(game['players']['white']) +\
-                            formated_name(game['players']['black']) + " has started!"
+                        text = "Game " + formated_name(game['players']['white']) + "(W) Vs " +\
+                            formated_name(game['players']['black']) + " (B) "+ " has started!"
                         await send_discord_message(text, bot)
                         kgs_games['ongoing'].append(game['channelId'])
     # clean the lists of games. We keep the 20 lasts.
