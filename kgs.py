@@ -30,7 +30,7 @@ async def get_messages(bot):
     print(r.status_code)
     for m in json.loads(r.text)['messages']:
         if m['type'] == 'LOGOUT':
-            login()
+            await login()
 
         if m['type'] == 'GAME_LIST' and m['channelId'] == OSR_room:
             for game in m['games']:
