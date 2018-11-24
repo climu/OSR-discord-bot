@@ -4,6 +4,7 @@ from discord.ext import commands
 from datetime import datetime, timedelta
 import asyncio
 import requests
+import aiohttp
 import re
 import kgs
 from bs4 import BeautifulSoup
@@ -16,7 +17,7 @@ from utils import add_footer, add_role, get_user, user_info_message, user_rank
 
 bot = commands.Bot(command_prefix=prefix)
 roles_are_set = False
-
+kgs_to_send = []
 SPECIAL_MESSAGES = {}  # type: Dict[int, SpecialMessage]
 
 
@@ -100,10 +101,10 @@ async def on_message(message):
     ctx = await bot.get_context(message)
     if ctx.command is None:
         # Not a valid command (Normal message or invalid command)
-        #if message.channel == bot.get_channel(channels["kgs"]):
-        #    if ctx.author != bot.user:
-        #        text = str(ctx.author.display_name) + ": " + message.content
-        #        await kgs.send_kgs_message(text)
+        if message.channel == bot.get_channel(channels["kgs"]):
+            if ctx.author != bot.user:
+                text = str(ctx.author.display_name) + ": " + message.content
+                kgs_to_send.append(text)
 
         if message.content.startswith(prefix):
             await message.delete()
@@ -602,16 +603,21 @@ async def sensei(ctx, term=None):
 
 async def check_KGS():
     await bot.wait_until_ready()
+    global kgs_to_send
     # Display a message for which time was bot last updated.
     channel = bot.get_channel(channels["testing-bots"])
     msg = "{} was just deployed.".format(bot.user.mention)
     await channel.send(msg)
     await get_roles()
-    #await kgs.login()
-    # init_globals()
-    #while not bot.is_closed == True:
-        #await kgs.get_messages(bot)
-        #await asyncio.sleep(2)
+    async with aiohttp.ClientSession() as kgs_session:
+        await kgs.login(kgs_session)
+        #init_globals()
+        while not bot.is_closed == True:
+            await kgs.send_kgs_messages(kgs_session, kgs_to_send)
+            kgs_to_send = []
+            await kgs.get_messages(kgs_session, bot)
+            await asyncio.sleep(1)
+
 
 bot.loop.create_task(check_KGS())
 bot.run(os.environ["LFG_TOKEN"])

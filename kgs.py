@@ -1,4 +1,3 @@
-import requests
 import json
 import asyncio
 import discord
@@ -6,12 +5,11 @@ import config
 
 kgs_url = 'http://www.gokgs.com/json/access'
 OSR_room = 3627409
-s = requests.Session()
 
 with open('/etc/kgs_password.txt') as f:
     kgs_password = f.read().strip()
 
-async def login():
+async def login(session):
     message = {
         "type": "LOGIN",
         "name": "OSRbot",  # change this if you are testing locally
@@ -19,19 +17,18 @@ async def login():
         "locale": "de_DE",
     }
     formatted_message = json.dumps(message)
-    r = s.post(kgs_url, formatted_message)
+    await session.post(kgs_url, data=formatted_message)
 
 
-async def logout():
-    s.post(kgs_url, json.dumps({"type": "LOGOUT"}))
+async def logout(session):
+    session.post(kgs_url, json.dumps({"type": "LOGOUT"}))
 
-async def get_messages(bot):
-    r = s.get(kgs_url)
-    if not 'messages' in json.loads(r.text):
+async def handle_messages(session, bot, json):
+    if not 'messages' in json:
         return
-    for m in json.loads(r.text)['messages']:
+    for m in json['messages']:
         if m['type'] == 'LOGOUT':
-            await login()
+            await login(session)
 
         #if m['type'] == 'GAME_LIST' and m['channelId'] == OSR_room:
             #for game in m['games']:
@@ -52,15 +49,20 @@ async def get_messages(bot):
                 await send_discord_message(text, bot)
 
 
+async def get_messages(session, bot):
+    async with session.get(kgs_url) as r:
+        await handle_messages(session, bot, await r.json())
+
 async def send_discord_message(message, bot):
     kgs_channel = bot.get_channel(config.channels["kgs"])
     await kgs_channel.send(message)
 
-async def send_kgs_message(text):
-    message = {
-        "type": "CHAT",
-        "text": text,  # change this if you are testing locally
-        "channelId": OSR_room
-    }
-    formatted_message = json.dumps(message)
-    r = s.post(kgs_url, formatted_message)
+async def send_kgs_messages(s, messages):
+    for text in messages:
+        message = {
+            "type": "CHAT",
+            "text": text,  # change this if you are testing locally
+            "channelId": OSR_room
+        }
+        formatted_message = json.dumps(message)
+        await s.post(kgs_url, data=formatted_message)
