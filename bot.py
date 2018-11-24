@@ -71,15 +71,6 @@ async def get_roles():
         roles_are_set = True
 
 
-@bot.event
-async def on_ready():
-    """Display a message for which time was bot last updated."""
-    channel = bot.get_channel(channels["testing-bots"])
-    msg = "{} was just deployed.".format(bot.user.mention)
-    await channel.send(msg)
-    await get_roles()
-
-
 # When a new member joins, tag them in "welcome" channel and let them know of our bot
 @bot.event
 async def on_member_join(member):
@@ -611,6 +602,11 @@ async def sensei(ctx, term=None):
 
 async def check_KGS():
     await bot.wait_until_ready()
+    # Display a message for which time was bot last updated.
+    channel = bot.get_channel(channels["testing-bots"])
+    msg = "{} was just deployed.".format(bot.user.mention)
+    await channel.send(msg)
+    await get_roles()
     await kgs.login()
     # init_globals()
     while not bot.is_closed == True:
