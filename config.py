@@ -92,8 +92,3 @@ del_commands = [
     "rengo",
     "goquest"
 ]
-
-#def init_globals():
-#    """ init global variables https://stackoverflow.com/a/13034908"""
-#    global announced_games
-#    announced_games = []

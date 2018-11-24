@@ -101,6 +101,7 @@ async def on_message(message):
     ctx = await bot.get_context(message)
     if ctx.command is None:
         # Not a valid command (Normal message or invalid command)
+        #If it's in kgs channel we add it in the kgs_to_send queue
         if message.channel == bot.get_channel(channels["kgs"]):
             if ctx.author != bot.user:
                 text = str(ctx.author.display_name) + ": " + message.content
@@ -611,7 +612,6 @@ async def check_KGS():
     await get_roles()
     async with aiohttp.ClientSession() as kgs_session:
         await kgs.login(kgs_session)
-        #init_globals()
         while not bot.is_closed == True:
             await kgs.send_kgs_messages(kgs_session, kgs_to_send)
             kgs_to_send = []
