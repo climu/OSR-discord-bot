@@ -100,12 +100,12 @@ async def on_message(message):
     ctx = await bot.get_context(message)
     if ctx.command is None:
         # Not a valid command (Normal message or invalid command)
-        if message.channel == bot.get_channel(channels["kgs"]):
-            if ctx.author != bot.user:
-                text = str(ctx.author.display_name) + ": " + message.content
-                await kgs.send_kgs_message(text)
+        #if message.channel == bot.get_channel(channels["kgs"]):
+        #    if ctx.author != bot.user:
+        #        text = str(ctx.author.display_name) + ": " + message.content
+        #        await kgs.send_kgs_message(text)
 
-        elif message.content.startswith(prefix):
+        if message.content.startswith(prefix):
             await message.delete()
             cmd = message.content.split(" ")[0][1:]
             desc = "I am not currently programmed for the command: " + cmd + "\n\n"
@@ -607,11 +607,11 @@ async def check_KGS():
     msg = "{} was just deployed.".format(bot.user.mention)
     await channel.send(msg)
     await get_roles()
-    await kgs.login()
+    #await kgs.login()
     # init_globals()
-    while not bot.is_closed == True:
-        await kgs.get_messages(bot)
-        await asyncio.sleep(2)
+    #while not bot.is_closed == True:
+        #await kgs.get_messages(bot)
+        #await asyncio.sleep(2)
 
 bot.loop.create_task(check_KGS())
 bot.run(os.environ["LFG_TOKEN"])
