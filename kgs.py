@@ -23,7 +23,8 @@ async def login(session):
         "locale": "de_DE",
     }
     formatted_message = json.dumps(message)
-    await session.post(kgs_url, data=formatted_message)
+    async with session.post(kgs_url, data=formatted_message) as r:
+        print(r)
 
 
 async def logout(session):
@@ -58,7 +59,7 @@ async def handle_messages(session, bot, json):
 
         if m['type'] == 'CHAT' and m['channelId'] == OSR_room:
             if m['user']['name'] != "OSRbot":
-                text = m['user']['name'] + "[" + m['user']['rank'] + "]: " + m['text']
+                text = formated_name(m['user']['name']) + m['text']
                 await send_discord_message(text, bot)
 
         if m['type'] == 'GAME_LIST' and m['channelId'] == OSR_room:
@@ -97,6 +98,7 @@ async def handle_messages(session, bot, json):
 
 async def get_messages(session, bot):
     async with session.get(kgs_url) as r:
+        print(await r.json())
         await handle_messages(session, bot, await r.json())
 
 async def send_discord_message(message, bot):
