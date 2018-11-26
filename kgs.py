@@ -59,7 +59,7 @@ async def handle_messages(session, bot, json):
 
         if m['type'] == 'CHAT' and m['channelId'] == OSR_room:
             if m['user']['name'] != "OSRbot":
-                text = formated_name(m['user']) + m['text']
+                text = formated_name(m['user']) + ': ' m['text']
                 await send_discord_message(text, bot)
 
         if m['type'] == 'GAME_LIST' and m['channelId'] == OSR_room:
