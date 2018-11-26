@@ -69,7 +69,8 @@ async def handle_messages(session, bot, json):
                 if game['gameType'] == 'challenge':
                     if game['channelId'] not in kgs_games['challenges']:
                         text = "Game offer from " + formated_name(game['players']['challengeCreator'])
-                        text += ": " + game['name']
+                        if 'name' in game:
+                            text += ": " + game['name']
                         await send_discord_message(text, bot)
                         kgs_games['challenges'].append(game['channelId'])
                 else:
