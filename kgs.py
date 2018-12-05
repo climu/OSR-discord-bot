@@ -122,7 +122,7 @@ async def announce_new_game(bot, game):
         text = "Let's kibitz " + formated_name(game['players']['white'])
         text += " Vs " + formated_name(game['players']['black'])
 
-    elif game['gameType'] in ['review', 'demonstration', 'teaching']:
+    elif game['gameType'] in ['review', 'demonstration', 'teaching', 'rengo_review']:
         title = "Let's learn together!"
         text = "A **" + game['gameType']
         if game['gameType'] == 'teaching':
