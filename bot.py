@@ -198,6 +198,10 @@ async def rengo(ctx):
 async def goquest(ctx):
     await add_role(ctx, 'goquest')
 
+@bot.command(pass_context=True)
+async def nine(ctx):
+    await add_role(ctx, '9x9')
+
 
 @bot.command(pass_context=True)
 async def no(ctx, role_name):
