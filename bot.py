@@ -393,9 +393,11 @@ async def roles(ctx):
     embed = discord.Embed(title="Roles system", description=desc, color=0xeee657)
     value = "To avoid using `@here`, users can choose to be in groups of interest:\n\n"
     value += "- **!go**: will assign you the `@player` role. This is for people who are interested in playing OSR games. Tag `@player` when you are looking for a game.\n\n"
+    value += "- **!nine**: will assign you the `@9x9` role for playing 9x9 games, similar to the `@player` role.\n\n"
     value += "- **!tsumego**: will assign you the `@tsumegoer` role. This is for people who are interested in tsumego study. Tag `@tsumegoer` when you post a new tsumego or have a related question.\n\n"
     value += "- **!review**: will assign you the `@reviewer` role. This is for people who are available to give game reviews. Tag `@reviewer` to ask for a game review.\n\n"
     value += "- **!dan/sdk/ddk**: will assign you the `@dan`, `@sdk` or `@ddk` role. By saying your approximate level, it will allow users to tag the appropriate group when lookinSg for game or help. Feel free to sign up to more than one groups.\n\n"
+    value += "- **!goquest**: will assign you the `@GoQuest` role for playing games on that server.\n\n"
     embed.add_field(name="Add a role", value=value, inline=False)
     embed.add_field(name="Remove a role", value="**!no [role]**: will remove the role. For instance, `!no go` will remove you from the `@player` role", inline=False)
     embed.add_field(name="List all online users in with a specific role", value="**!list [role]**: will list all online users with the said role. For instance `!list tsumego` will list all online users of the `@tsumego` role.", inline=False)
