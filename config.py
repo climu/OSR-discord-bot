@@ -44,7 +44,7 @@ roles_dict = {
         "verbose": "interested in GoQuest games",
     },
     '9x9': {
-        "id": 520949862787842059,
+        "id": 513770722884059146,
         "allowed_channels": ["general", "game_discussion", "bot-commands", "testing-bots", "9x9", "tournament"],
         "verbose": "interested in 9x9 games",
     },
