@@ -626,4 +626,4 @@ async def check_KGS():
 
 
 bot.loop.create_task(check_KGS())
-bot.run(os.environ["LFG_TOKEN"])
+bot.run(os.environ["OSR_TOKEN"])

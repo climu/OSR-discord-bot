@@ -2,6 +2,7 @@ import json
 import asyncio
 import discord
 import config
+import os
 
 kgs_url = 'http://www.gokgs.com/json/access'
 OSR_room = 3627409
@@ -19,8 +20,8 @@ with open('/etc/kgs_password.txt') as f:
 async def login(session):
     message = {
         "type": "LOGIN",
-        "name": "OSRbot",  # change this if you are testing locally
-        "password": kgs_password,
+        "name": os.environ["KGS_USERNAME"],
+        "password": os.environ["KGS_PASSWORD"],
         "locale": "de_DE",
     }
     formatted_message = json.dumps(message)
