@@ -18,4 +18,5 @@ The most basic commands to get our users going are listed below:
 !help - A more detailed list of commands.
 ```
 
-To run it, you'll need to provide your own bot token, to be pulled from your shell's environment variables (`LFG_TOKEN`). Add `export LFG_TOKEN="my-token-here"` to `~/.zshenv` (if you use Z Shell) or simply add it to your Windows environment variables.
+To run it, you'll need to provide your own bot token, to be pulled from your shell's environment variables (`OSR_TOKEN`). Add `export OSR_TOKEN="my-token-here"` to `~/.zshenv` (if you use Z Shell), to `~/.bashrc` (if you use bash)  or simply add it to your Windows environment variables.
+Same needs to be done for the KGS credentials (`KGS_USERNAME` and `KGS_PASSWORD`)
