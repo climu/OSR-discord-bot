@@ -14,8 +14,6 @@ kgs_games = {
     'ongoing': [],
     'ended': []
 }
-with open('/etc/kgs_password.txt') as f:
-    kgs_password = f.read().strip()
 
 async def login(session):
     message = {
