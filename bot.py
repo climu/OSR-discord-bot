@@ -228,6 +228,63 @@ def get_user_info(user: discord.User) -> UnsentMessage:
         return UnsentMessage("", embed)
 
 
+@bot.command(pass_context=True)
+async def rank(ctx: commands.Context, username: str = None) -> None:
+
+    if username is None:
+        last_message = await ctx.message.channel.history(limit=1).flatten()
+        user = last_message[0].author
+    else:
+        user = get_user(username, bot)
+
+    if user is not None:
+        infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
+        info = infos.get(str(user.id))
+        if info is not None:
+            kgs_username = info.get('kgs_username')
+            kgs_rank = info.get('kgs_rank')
+            ogs_username = info.get('ogs_username')
+            ogs_rank = info.get('ogs_rank')
+            if kgs_username is not None or ogs_username is not None:
+                embed = discord.Embed(title="KGS rank history for " + str(username), color=0xeee657)
+                embed.set_image(url="http://www.gokgs.com/servlet/graph/"+kgs_username+"-en_US.png")
+                add_footer(embed, ctx.author)
+                await ctx.send(embed=embed)
+        return
+    # Look for nearest matches, if they exist
+    users = bot.get_guild(guild_id).members  # type: List[discord.Member]
+    # Just using sequencematcher because its simple and no need to install extra Library
+    # If keen on better distrance metrics, look at installing Jellyfish or Fuzzy Wuzzy
+    similarities = [(member,
+                     max(SequenceMatcher(None, username.lower(), member.display_name.lower()).ratio(),
+                         SequenceMatcher(None, username.lower(), member.name.lower()).ratio())) for member in users]
+    similarities.sort(key=lambda tup: tup[1], reverse=True)
+
+    # unlikely to get 5 with >70% match anyway...
+    top_matches = [x for x in similarities[:5] if x[1] > 0.7]  # type: List[Tuple[discord.Member, float]]
+
+    uids = [x[0].id for x in top_matches]
+    infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
+
+    # Split and recombine so that OSR members appear top of list
+    osr_members = [x for x in top_matches if infos.get(str(x[0].id)) is not None]
+    not_osr_members = [x for x in top_matches if x not in osr_members]
+    top_matches = osr_members + not_osr_members
+
+    message = ''
+    for _i, x in enumerate(top_matches):
+        message += '\n{}\N{COMBINING ENCLOSING KEYCAP}**{}**#{} {}'.format(_i + 1,
+                                                                           x[0].display_name,
+                                                                           x[0].discriminator,
+                                                                           user_rank(x[0], infos))
+    if username in roles_dict:
+        message += "\n\n However, `" + username + "` is a valid role. Did you mean `!list " + username + "`?"
+    nearest_or_sorry = '", nearest matches:' if top_matches else '", sorry'
+    embed = discord.Embed(description=message, title='No users by the exact name "' + username + nearest_or_sorry)
+    add_footer(embed, ctx.message.author)
+    msg = await ctx.send(embed=embed)
+
+
 @bot.command(pass_context=True, aliases=['user'])
 async def who(ctx: commands.Context, username: str = None) -> None:
 
@@ -361,6 +418,7 @@ async def help(ctx, subject=None):
         embed.add_field(name="**!sensei [term]**",
                         value="Display information for a term from Sensei's Library.",
                         inline=False)
+        embed.add_field(name="**!rank**", value="Get KGS rank history for a specific user.", inline=False)
         embed.add_field(name="**!info**", value="Gives a little info about the bot.", inline=False)
         embed.add_field(name="**!help**", value="Gives this message.", inline=False)
         embed.add_field(name="**!help osr**",
