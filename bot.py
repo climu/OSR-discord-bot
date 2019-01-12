@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 from typing import Dict, List, Tuple  # noqa
 
-from config import roles_dict, del_commands, guild_id, prefix, channels
+from config import roles_dict, guild_id, prefix, channels
 from utils import add_footer, add_role, get_user, user_info_message, user_rank
 
 
@@ -118,11 +118,6 @@ async def on_message(message):
             add_footer(embed, ctx.author)
             await message.channel.send(embed=embed)
         return
-
-    cmd = ctx.command.name
-
-    if cmd in del_commands and isinstance(message.channel, discord.TextChannel):
-        await message.delete()
 
     await bot.process_commands(message)
 

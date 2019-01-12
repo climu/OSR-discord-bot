@@ -67,34 +67,3 @@ pics = {
     "yuta": "https://cdn.discordapp.com/attachments/287487891003932672/461811731359072259/vfcp43js2.png",
     "kj_facepalm": "https://cdn.discordapp.com/attachments/366870031285616651/461813881900236821/iozlnkjg.png",
 }
-
-# For the following commands, the calling message will be deleted
-del_commands = [
-    "go",
-    "GO",
-    "tsumego",
-    "review",
-    "ddk",
-    "sdk",
-    "dan",
-    "no",
-    "who",
-    "whos",
-    "list",
-    "cho",
-    "cho_hug",
-    "chang_ho",
-    "yuta",
-    "kj_facepalm",
-    "info",
-    "help",
-    "league",
-    "roles",
-    "sensei",
-    "define",
-    "scary",
-    "quote",
-    "rengo",
-    "goquest",
-    "nine"
-]
