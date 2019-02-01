@@ -10,9 +10,6 @@ import kgs
 from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 from typing import Dict, List, Tuple  # noqa
-import math
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 
 from config import roles_dict, guild_id, prefix, channels
 from utils import add_footer, add_role, get_user
@@ -233,7 +230,7 @@ def get_user_info(user: discord.User) -> UnsentMessage:
 
 @bot.command(pass_context=True)
 async def rank(ctx: commands.Context, username: str = None) -> None:
-    """Show rank graphs for OGS and KGS servers."""
+
     if username is None:
         last_message = await ctx.message.channel.history(limit=1).flatten()
         user = last_message[0].author
@@ -245,54 +242,14 @@ async def rank(ctx: commands.Context, username: str = None) -> None:
         info = infos.get(str(user.id))
         if info is not None:
             kgs_username = info.get('kgs_username')
+            kgs_rank = info.get('kgs_rank')
             ogs_username = info.get('ogs_username')
-            ogs_id = info.get('ogs_id')
-            if kgs_username is not None:
+            ogs_rank = info.get('ogs_rank')
+            if kgs_username is not None or ogs_username is not None:
                 embed = discord.Embed(title="KGS rank history for " + str(username), color=0xeee657)
                 embed.set_image(url="http://www.gokgs.com/servlet/graph/"+kgs_username+"-en_US.png")
                 add_footer(embed, ctx.author)
                 await ctx.send(embed=embed)
-            if ogs_username is not None:
-                def format_gorank(value):
-                    if value == 0:
-                        return "1d"
-                    elif value > 0:
-                        return str(int(value))+"k"
-                    elif value < 0:
-                        return str(1+abs(int(value)))+"d"
-
-                r = requests.get('https://online-go.com/termination-api/player/'+str(ogs_id)+'/rating-history?speed=overall&size=0')
-                rl = r.text.split('\n')
-                rank = []
-                dates = []
-                for game in range(1, len(rl)-1):
-                    rank.append(30-(31.25)*math.log(float(rl[game].split('\t')[4]) / 850))
-                    dates.append(datetime.utcfromtimestamp(int(rl[game].split('\t')[0])).strftime('%d/%m/%Y'))
-
-                x = [datetime.strptime(d, '%d/%m/%Y').date() for d in dates]
-                y = range(len(x))
-
-                fig, ax = plt.subplots(nrows=1, ncols=1)
-                plt.plot(x, rank, color=(0, 194/255, 0))
-
-                ax.xaxis.set_major_formatter(mdates.DateFormatter('\n%Y'))
-                ax.xaxis.set_major_locator(mdates.YearLocator())
-                ax.invert_yaxis()
-
-                fig.canvas.draw()
-                labels = [format_gorank(float(item.get_text().replace('−', '-'))) for item in ax.get_yticklabels()]
-                ax.set_yticklabels(labels)
-                fig.patch.set_facecolor((236/255, 236/255, 176/255))
-                ax.patch.set_facecolor('black')
-                ax.yaxis.grid(linewidth=0.2)
-                plt.title("OGS Rank history for " + ogs_username)
-
-                fig.savefig('Rank.png', bbox_inches='tight')
-
-                file = discord.File('Rank.png', filename="OGS Rank history for " + ogs_username +".png")
-                await ctx.send(file=file)
-
-                os.remove('Rank.png')
         return
     # Look for nearest matches, if they exist
     users = bot.get_guild(guild_id).members  # type: List[discord.Member]
