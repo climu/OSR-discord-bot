@@ -12,7 +12,8 @@ from difflib import SequenceMatcher
 from typing import Dict, List, Tuple  # noqa
 
 from config import roles_dict, guild_id, prefix, channels
-from utils import add_footer, add_role, get_user, user_info_message, user_rank
+from utils import add_footer, add_role, get_user
+from utils import user_info_message, user_info_embed, user_rank
 
 
 bot = commands.Bot(command_prefix=prefix)
@@ -223,8 +224,7 @@ def get_user_info(user: discord.User) -> UnsentMessage:
         embed = discord.Embed(title="Lazy " + user.name, description=message, color=0xeee657)
         return UnsentMessage("", embed)
     else:
-        message = user_info_message(user, infos)
-        embed = discord.Embed(description=message)
+        embed = user_info_embed(user, infos)
         return UnsentMessage("", embed)
 
 

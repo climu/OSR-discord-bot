@@ -58,6 +58,50 @@ def user_info_message(user, infos):
     return message
 
 
+def user_info_embed(user, infos):
+    """Get user information into an embed."""
+    info = infos.get(str(user.id))
+    if info is not None:
+        osr_username = info.get('osr_username')
+        leagues = info.get('leagues')
+        kgs_username = info.get('kgs_username')
+        kgs_rank = info.get('kgs_rank')
+        ogs_username = info.get('ogs_username')
+        ogs_rank = info.get('ogs_rank')
+        ogs_id = info.get('ogs_id')
+        bio = info.get('bio')
+        timezone = info.get('timezone')
+        country = info.get('country')
+
+        embed = discord.Embed(title=user.name, description=bio,
+                              url='https://openstudyroom.org/league/account/{}/'.format(osr_username),
+                              color=0xff8000)
+        embed.set_thumbnail(url=user.avatar_url)
+
+        if kgs_username is not None or ogs_username is not None:
+            if ogs_username is not None:
+                ogs_info = '[{}](https://online-go.com/player/{}) ({})'.format(ogs_username, ogs_id, ogs_rank)
+                embed.add_field(name="OGS", value=ogs_info, inline=True)
+            if kgs_username is not None:
+                kgs_info = '[{u}](http://www.gokgs.com/graphPage.jsp?user={u}) ({r})'.format(u=kgs_username, r=kgs_rank)
+                embed.add_field(name="KGS", value=kgs_info, inline=True)
+
+        message_lg = []
+        if leagues is not None:
+            for league in leagues:
+                message_lg.append('[{n}](https://openstudyroom.org/league/{id}) '.format(n=league['name'],
+                                                                                         id=league['id']))
+            message_lg = ', '.join(message_lg)
+            embed.add_field(name="Registered leagues", value=message_lg, inline=False)
+
+    if country:
+        embed.add_field(name="Country", value=country, inline=True)
+    if timezone:
+        embed.add_field(name="Timezone", value=timezone, inline=True)
+    embed.set_footer(text="requested by climu")
+    return embed
+
+
 def user_rank(user, infos):
     message = ''
     info = infos.get(str(user.id))
