@@ -291,6 +291,9 @@ async def who(ctx: commands.Context, username: str = None) -> None:
     if username is None:
         last_message = await ctx.message.channel.history(limit=2).flatten()
         user = last_message[1].author
+    elif username is "me":
+        last_message = await ctx.message.channel.history(limit=1).flatten()
+        user = last_message[0].author
     else:
         user = get_user(username, bot)
 
