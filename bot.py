@@ -157,50 +157,14 @@ for name, url in PICTURE_COMMANDS.items():
     bot.command(pass_context=True, name=name)(picture_command(url))
 
 # Roles managment start here
-
-@bot.command(pass_context=True)
-async def go(ctx):
-    await add_role(ctx, 'go')
-
-
-@bot.command(pass_context=True)
-async def dan(ctx):
-    await add_role(ctx, 'dan')
+def role_command(role):
+    async def inner(ctx):
+        await add_role(ctx, role)
+    return inner
 
 
-@bot.command(pass_context=True)
-async def sdk(ctx):
-    await add_role(ctx, 'sdk')
-
-
-@bot.command(pass_context=True)
-async def ddk(ctx):
-    await add_role(ctx, 'ddk')
-
-
-@bot.command(pass_context=True)
-async def tsumego(ctx):
-    await add_role(ctx, 'tsumego')
-
-
-@bot.command(pass_context=True)
-async def review(ctx):
-    await add_role(ctx, 'review')
-
-
-@bot.command(pass_context=True)
-async def rengo(ctx):
-    await add_role(ctx, 'rengo')
-
-
-@bot.command(pass_context=True)
-async def goquest(ctx):
-    await add_role(ctx, 'goquest')
-
-
-@bot.command(pass_context=True)
-async def nine(ctx):
-    await add_role(ctx, 'nine')
+for role, role_dict in roles_dict.items():
+    bot.command(pass_context=True, name=role)(role_command(role))
 
 
 @bot.command(pass_context=True)
