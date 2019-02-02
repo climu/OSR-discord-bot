@@ -5,3 +5,4 @@ websockets<5.0,>=4.0s<5.0,>=4.0
 async-timeout
 requests
 beautifulsoup4
+matplotlib
