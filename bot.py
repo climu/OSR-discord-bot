@@ -1,7 +1,8 @@
+"""OSR Discord Bot."""
 import os
 import discord
 from discord.ext import commands
-from datetime import datetime, timedelta
+from datetime import datetime
 import asyncio
 import requests
 import aiohttp
