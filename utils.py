@@ -1,7 +1,8 @@
 from config import roles_dict, member_role_id
 import discord
 from config import guild_id
-
+import pytz
+from datetime import datetime
 
 async def add_role(ctx, role_name):
     role_dict = roles_dict[role_name]
@@ -98,6 +99,8 @@ def user_info_embed(user, infos):
         embed.add_field(name="Country", value=country, inline=True)
     if timezone:
         embed.add_field(name="Timezone", value=timezone, inline=True)
+        time_now = datetime.now(pytz.timezone(timezone)).strftime('%H:%M')
+        embed.add_field(name="Local Time", value=time_now, inline=True)
     embed.set_footer(text="requested by climu")
     return embed
 
