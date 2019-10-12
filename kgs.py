@@ -171,7 +171,8 @@ async def handle_messages(session, bot, json):
 
 async def get_messages(session, bot):
     async with session.get(kgs_url) as r:
-        await handle_messages(session, bot, await r.json())
+        if r.status == 200:
+            await handle_messages(session, bot, await r.json())
 
 async def send_discord_message(message, bot):
     kgs_channel = bot.get_channel(config.channels["general"])
