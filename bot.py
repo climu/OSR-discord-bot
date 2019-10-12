@@ -106,8 +106,8 @@ async def on_message(message):
     ctx = await bot.get_context(message)
     if ctx.command is None:
         # Not a valid command (Normal message or invalid command)
-        #If it's in kgs channel we add it in the kgs_to_send queue
-        if message.channel == bot.get_channel(channels["kgs"]):
+        #If it's in general channel we add it in the kgs_to_send queue
+        if message.channel == bot.get_channel(channels["general"]):
             if ctx.author != bot.user:
                 text = str(ctx.author.display_name) + ": " + message.content
                 kgs_to_send.append(text)
