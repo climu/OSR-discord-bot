@@ -295,10 +295,9 @@ async def rank(ctx: commands.Context, username: str = None) -> None:
 
 @bot.command(pass_context=True, aliases=['user'])
 async def who(ctx: commands.Context, username: str = None) -> None:
-
     if username is None:
-        last_message = await ctx.message.channel.history(limit=3).flatten()
-        user = next(u.author for u in last_message if u.author != bot)
+        last_message = await ctx.message.channel.history(limit=4).flatten()
+        user = next(u.author for u in last_message[1:] if u.author.id != 461792018843172866)
     elif username == "me":
         last_message = await ctx.message.channel.history(limit=1).flatten()
         user = last_message[0].author
