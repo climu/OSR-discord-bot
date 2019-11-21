@@ -60,7 +60,8 @@ class WhoMessage(SpecialMessage):
             add_footer(info.embed, self.originator)
             await self.message.clear_reactions()
             # This needs to be here for some reason, else we get an extra name after edit...
-            await self.message.edit(embed=None)
+            # no more since discord.py 1.2.5
+            #await self.message.edit(embed=None)
             await self.message.edit(content=info.message, embed=info.embed)
             del SPECIAL_MESSAGES[self.message.id]
         except (ValueError, IndexError):
