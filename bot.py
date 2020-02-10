@@ -207,7 +207,7 @@ async def rank(ctx: commands.Context, username: str = None) -> None:
         user = get_user(username, bot)
 
     if user is not None:
-        infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
+        infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
         info = infos.get(str(user.id))
         if info is not None:
             kgs_username = info.get('kgs_username')
@@ -273,7 +273,7 @@ async def rank(ctx: commands.Context, username: str = None) -> None:
     top_matches = [x for x in similarities[:5] if x[1] > 0.7]  # type: List[Tuple[discord.Member, float]]
 
     uids = [x[0].id for x in top_matches]
-    infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
+    infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
 
     # Split and recombine so that OSR members appear top of list
     osr_members = [x for x in top_matches if infos.get(str(x[0].id)) is not None]
@@ -324,7 +324,7 @@ async def who(ctx: commands.Context, username: str = None) -> None:
     top_matches = [x for x in similarities[:5] if x[1] > 0.7]  # type: List[Tuple[discord.Member, float]]
 
     uids = [x[0].id for x in top_matches]
-    infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
+    infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
 
     # Split and recombine so that OSR members appear top of list
     osr_members = [x for x in top_matches if infos.get(str(x[0].id)) is not None]
@@ -373,7 +373,7 @@ async def list(ctx, role_name):
             return
 
         uids = [member.id for member in users]
-        infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
+        infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': uids}).json()
         message = ''
         message2 = ''
         for user in users:
