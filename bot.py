@@ -186,7 +186,7 @@ async def no(ctx, role_name):
 
 
 def get_user_info(user: discord.User) -> UnsentMessage:
-    infos = requests.get("https://dev.openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
+    infos = requests.get("https://openstudyroom.org/league/discord-api/", params={'uids': [user.id]}).json()
     if not infos:
         message = ('{} was too lazy to link their OSR account with their discord. '
                    'They just have to follow this [link](https://openstudyroom.org/discord/)!').format(user.mention)
