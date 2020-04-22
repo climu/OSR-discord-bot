@@ -341,7 +341,9 @@ async def who(ctx: commands.Context, username: str = None) -> None:
         message += "\n\n However, `" + username + "` is a valid role. Did you mean `!list " + username + "`?"
     nearest_or_sorry = '", nearest matches:' if top_matches else '", sorry'
     embed = discord.Embed(description=message, title='No users by the exact name "' + username + nearest_or_sorry)
-    add_footer(embed, ctx.message.author)
+    footer_text = "{}#{} can react to this message to display one user infos".format(ctx.message.author.name, ctx.message.author.discriminator)
+    embed.set_footer(text=footer_text, icon_url=ctx.message.author.avatar_url)
+
     msg = await ctx.send(embed=embed)
 
     for _i, match in enumerate(top_matches):  # type: Tuple[int, Tuple[discord.Member, float]]
