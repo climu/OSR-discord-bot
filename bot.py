@@ -305,6 +305,10 @@ async def who(ctx: commands.Context, username: str = None) -> None:
     else:
         user = get_user(username, bot)
 
+    # If the message contains a mention, use that
+    if user is None and ctx.message.mentions:
+        user = ctx.message.mentions[0]
+
     if user is not None:
         info = get_user_info(user)
         add_footer(info.embed, ctx.message.author)
