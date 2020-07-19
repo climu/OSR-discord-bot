@@ -20,3 +20,8 @@ The most basic commands to get our users going are listed below:
 
 To run it, you'll need to provide your own bot token, to be pulled from your shell's environment variables (`OSR_TOKEN`). Add `export OSR_TOKEN="my-token-here"` to `~/.zshenv` (if you use Z Shell), to `~/.bashrc` (if you use bash)  or simply add it to your Windows environment variables.
 Same needs to be done for the KGS credentials (`KGS_USERNAME` and `KGS_PASSWORD`)
+
+Local setup: Install dependencies using `pip install -r requirements.py`.
+Expects python3.6+. Set up a testing server and insert appropriate guild id and
+channel ids in config.py. You can skip KGS integration by removing the check
+task from the end of bot.py.
