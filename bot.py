@@ -107,22 +107,10 @@ async def on_message(message):
     ctx = await bot.get_context(message)
     if ctx.command is None:
         # Not a valid command (Normal message or invalid command)
-        #If it's in general channel we add it in the kgs_to_send queue
-        if message.channel == bot.get_channel(channels["general"]):
-            if ctx.author != bot.user:
-                text = str(ctx.author.display_name) + ": " + message.content
-                kgs_to_send.append(text)
-
-        if message.content.startswith(prefix):
-            await message.delete()
-            cmd = message.content.split(" ")[0][1:]
-            desc = "I am not currently programmed for the command: " + cmd + "\n\n"
-            desc += "Please see the available commands by typing `!help`."
-            embed = discord.Embed(title="Command " + cmd + " not found.", description=desc, color=0xeee657)
-            embed.set_thumbnail(
-                url="https://cdn.discordapp.com/attachments/464175979406032897/464915353382813698/error.png")
-            add_footer(embed, ctx.author)
-            await message.channel.send(embed=embed)
+        # If it's in general channel we add it in the kgs_to_send queue
+        if message.channel == bot.get_channel(channels["general"]) and ctx.author != bot.user:
+            text = str(ctx.author.display_name) + ": " + message.content
+            kgs_to_send.append(text)
         return
 
     await bot.process_commands(message)
