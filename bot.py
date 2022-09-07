@@ -20,7 +20,11 @@ from utils import add_footer, add_role, get_user
 from utils import user_info_message, user_info_embed, user_rank
 
 
-bot = commands.Bot(command_prefix=prefix)
+
+
+intents = discord.Intents.default()
+bot = commands.Bot(command_prefix=prefix, intents=intents)
+
 roles_are_set = False
 kgs_to_send = []
 SPECIAL_MESSAGES = {}  # type: Dict[int, SpecialMessage]
@@ -684,5 +688,13 @@ async def check_KGS():
             await asyncio.sleep(1)
 
 
-bot.loop.create_task(check_KGS())
-bot.run(os.environ["OSR_TOKEN"])
+
+
+async def main():
+    # Lets see about KGS later
+    #bot.loop.create_task(check_KGS())
+    # start the client
+    async with bot:
+        await bot.start(os.environ["OSR_TOKEN"])
+
+asyncio.run(main())
