@@ -1,5 +1,6 @@
 """OSR Discord Bot."""
 import os
+import dotenv
 import discord
 from discord.ext import commands
 from datetime import datetime
