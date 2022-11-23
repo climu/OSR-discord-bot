@@ -81,6 +81,14 @@ async def get_roles():
         roles_are_set = True
 
 
+@bot.event
+async def on_ready():
+    print('Logged in as')
+    print(bot.user.name)
+    print(bot.user.id)
+    print('------')
+
+
 # When a new member joins, tag them in "welcome" channel and let them know of our bot
 @bot.event
 async def on_member_join(member):
@@ -673,19 +681,19 @@ async def sensei(ctx, term=None):
 
 async def check_KGS():
     await bot.wait_until_ready()
-    global kgs_to_send
-    # Display a message for which time was bot last updated.
-    channel = bot.get_channel(channels["testing-bots"])
-    msg = "{} was just deployed.".format(bot.user.mention)
-    await channel.send(msg)
-    await get_roles()
-    async with aiohttp.ClientSession() as kgs_session:
-        await kgs.login(kgs_session)
-        while not bot.is_closed == True:
-            await kgs.send_kgs_messages(kgs_session, kgs_to_send)
-            kgs_to_send = []
-            await kgs.get_messages(kgs_session, bot)
-            await asyncio.sleep(1)
+#     global kgs_to_send
+#     # Display a message for which time was bot last updated.
+#     channel = bot.get_channel(channels["testing-bots"])
+#     msg = "{} was just deployed.".format(bot.user.mention)
+#     await channel.send(msg)
+#     await get_roles()
+#     async with aiohttp.ClientSession() as kgs_session:
+#         await kgs.login(kgs_session)
+#         while not bot.is_closed == True:
+#             await kgs.send_kgs_messages(kgs_session, kgs_to_send)
+#             kgs_to_send = []
+#             await kgs.get_messages(kgs_session, bot)
+#             await asyncio.sleep(1)
 
 
 bot.loop.create_task(check_KGS())
