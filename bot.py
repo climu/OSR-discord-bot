@@ -1,13 +1,11 @@
 """OSR Discord Bot."""
 import os
+import dotenv
 import discord
 from discord.ext import commands
 from datetime import datetime
-import asyncio
 import requests
-import aiohttp
 import re
-import kgs
 from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 from typing import Dict, List, Tuple  # noqa
@@ -21,12 +19,17 @@ from utils import user_info_message, user_info_embed, user_rank
 
 
 bot = commands.Bot(command_prefix=prefix)
+
 roles_are_set = False
 kgs_to_send = []
 SPECIAL_MESSAGES = {}  # type: Dict[int, SpecialMessage]
 
+# load .env file
+# the token is in the .env file
+dotenv.load_dotenv(".env")
 
-class UnsentMessage():
+
+class UnsentMessage:
     def __init__(self, message: str, embed: discord.Embed) -> None:
         self.message = message
         self.embed = embed
@@ -35,7 +38,7 @@ class UnsentMessage():
         await ctx.send(self.message, embed=self.embed)
 
 
-class SpecialMessage():
+class SpecialMessage:
     def __init__(self, message: discord.Message, originator: discord.User) -> None:
         self.message = message
         self.originator = originator
@@ -61,7 +64,7 @@ class WhoMessage(SpecialMessage):
             await self.message.clear_reactions()
             # This needs to be here for some reason, else we get an extra name after edit...
             # no more since discord.py 1.2.5
-            #await self.message.edit(embed=None)
+            # await self.message.edit(embed=None)
             await self.message.edit(content=info.message, embed=info.embed)
             del SPECIAL_MESSAGES[self.message.id]
         except (ValueError, IndexError):
@@ -76,6 +79,14 @@ async def get_roles():
             role = discord.utils.get(bot.get_guild(guild_id).roles, id=role_dict['id'])
             roles_dict[name].update({"role": role})
         roles_are_set = True
+
+
+@bot.event
+async def on_ready():
+    print('Logged in as')
+    print(bot.user.name)
+    print(bot.user.id)
+    print('------')
 
 
 # When a new member joins, tag them in "welcome" channel and let them know of our bot
@@ -111,7 +122,6 @@ async def on_message(message):
         if message.channel == bot.get_channel(channels["general"]) and ctx.author != bot.user:
             text = str(ctx.author.display_name) + ": " + message.content
             kgs_to_send.append(text)
-        return
 
     await bot.process_commands(message)
 
@@ -146,6 +156,7 @@ def picture_command(url):
 for name, url in PICTURE_COMMANDS.items():
     bot.command(pass_context=True, name=name)(picture_command(url))
 
+
 # Roles managment start here
 def role_command(role):
     async def inner(ctx):
@@ -161,12 +172,12 @@ for role, role_dict in roles_dict.items():
 async def no(ctx, role_name):
     role_dict = roles_dict.get(role_name)
     if role_dict is None:
-        return
+        pass
     if str(ctx.message.channel) not in role_dict['allowed_channels']:
         message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command: "
         message += ', '.join(role_dict['allowed_channels'])
         await ctx.send(message)
-        return
+
     role = role_dict["role"]
 
     await ctx.message.author.remove_roles(role)
@@ -247,7 +258,7 @@ async def rank(ctx: commands.Context, username: str = None) -> None:
                 await ctx.send(file=file)
 
                 os.remove('Rank.png')
-        return
+        pass
     # Look for nearest matches, if they exist
     users = bot.get_guild(guild_id).members  # type: List[discord.Member]
     # Just using sequencematcher because its simple and no need to install extra Library
@@ -667,22 +678,23 @@ async def sensei(ctx, term=None):
         add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
 
+
 async def check_KGS():
     await bot.wait_until_ready()
-    global kgs_to_send
-    # Display a message for which time was bot last updated.
-    channel = bot.get_channel(channels["testing-bots"])
-    msg = "{} was just deployed.".format(bot.user.mention)
-    await channel.send(msg)
-    await get_roles()
-    async with aiohttp.ClientSession() as kgs_session:
-        await kgs.login(kgs_session)
-        while not bot.is_closed == True:
-            await kgs.send_kgs_messages(kgs_session, kgs_to_send)
-            kgs_to_send = []
-            await kgs.get_messages(kgs_session, bot)
-            await asyncio.sleep(1)
+#     global kgs_to_send
+#     # Display a message for which time was bot last updated.
+#     channel = bot.get_channel(channels["testing-bots"])
+#     msg = "{} was just deployed.".format(bot.user.mention)
+#     await channel.send(msg)
+#     await get_roles()
+#     async with aiohttp.ClientSession() as kgs_session:
+#         await kgs.login(kgs_session)
+#         while not bot.is_closed == True:
+#             await kgs.send_kgs_messages(kgs_session, kgs_to_send)
+#             kgs_to_send = []
+#             await kgs.get_messages(kgs_session, bot)
+#             await asyncio.sleep(1)
 
 
 bot.loop.create_task(check_KGS())
-bot.run(os.environ["OSR_TOKEN"])
+bot.run(os.environ["TOKEN"])

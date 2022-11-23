@@ -18,10 +18,25 @@ The most basic commands to get our users going are listed below:
 !help - A more detailed list of commands.
 ```
 
-To run it, you'll need to provide your own bot token, to be pulled from your shell's environment variables (`OSR_TOKEN`). Add `export OSR_TOKEN="my-token-here"` to `~/.zshenv` (if you use Z Shell), to `~/.bashrc` (if you use bash)  or simply add it to your Windows environment variables.
-Same needs to be done for the KGS credentials (`KGS_USERNAME` and `KGS_PASSWORD`)
+To run it, you'll need to provide your own bot token. You can get one from the [Discord Developer Portal](https://discordapp.com/developers/applications/).
+Once you have your token, put in at the end of sample.env, right after `TOKEN=`, and rename it to .env.
 
-Local setup: Install dependencies using `pip install -r requirements.py`.
+
+
+Local setup: Install dependencies using `pip install -r requirements.tct`.
 Expects python3.6+. Set up a testing server and insert appropriate guild id and
 channel ids in config.py. You can skip KGS integration by removing the check
 task from the end of bot.py.
+
+### Warning:
+Be sure Message Intents are enabled in your bot's settings.
+
+Here is how to enable them:
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
+2. Click on your bot
+3. Go to the "Bot" tab
+4. Scroll down to "Privileged Gateway Intents"
+5. Enable both "Message Intents"
+6. Save changes
+7. Done :) !
+![img.png](img.png)
