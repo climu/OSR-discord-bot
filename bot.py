@@ -29,7 +29,7 @@ SPECIAL_MESSAGES = {}  # type: Dict[int, SpecialMessage]
 dotenv.load_dotenv(".env")
 
 
-class UnsentMessage():
+class UnsentMessage:
     def __init__(self, message: str, embed: discord.Embed) -> None:
         self.message = message
         self.embed = embed
@@ -38,7 +38,7 @@ class UnsentMessage():
         await ctx.send(self.message, embed=self.embed)
 
 
-class SpecialMessage():
+class SpecialMessage:
     def __init__(self, message: discord.Message, originator: discord.User) -> None:
         self.message = message
         self.originator = originator
@@ -64,7 +64,7 @@ class WhoMessage(SpecialMessage):
             await self.message.clear_reactions()
             # This needs to be here for some reason, else we get an extra name after edit...
             # no more since discord.py 1.2.5
-            #await self.message.edit(embed=None)
+            # await self.message.edit(embed=None)
             await self.message.edit(content=info.message, embed=info.embed)
             del SPECIAL_MESSAGES[self.message.id]
         except (ValueError, IndexError):
@@ -147,6 +147,7 @@ def picture_command(url):
 
 for name, url in PICTURE_COMMANDS.items():
     bot.command(pass_context=True, name=name)(picture_command(url))
+
 
 # Roles managment start here
 def role_command(role):
