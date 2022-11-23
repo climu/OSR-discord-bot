@@ -23,7 +23,7 @@ Once you have your token, put in at the end of sample.env, right after `TOKEN=`,
 
 
 
-Local setup: Install dependencies using `pip install -r requirements.py`.
+Local setup: Install dependencies using `pip install -r requirements.tct`.
 Expects python3.6+. Set up a testing server and insert appropriate guild id and
 channel ids in config.py. You can skip KGS integration by removing the check
 task from the end of bot.py.
