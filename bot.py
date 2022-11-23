@@ -21,9 +21,14 @@ from utils import user_info_message, user_info_embed, user_rank
 
 
 bot = commands.Bot(command_prefix=prefix)
+
 roles_are_set = False
 kgs_to_send = []
 SPECIAL_MESSAGES = {}  # type: Dict[int, SpecialMessage]
+
+# load .env file
+# the token is in the .env file
+dotenv.load_dotenv(".env")
 
 
 class UnsentMessage():
@@ -667,6 +672,7 @@ async def sensei(ctx, term=None):
         add_footer(embed, ctx.author)
         await ctx.send(embed=embed)
 
+
 async def check_KGS():
     await bot.wait_until_ready()
     global kgs_to_send
@@ -685,4 +691,4 @@ async def check_KGS():
 
 
 bot.loop.create_task(check_KGS())
-bot.run(os.environ["OSR_TOKEN"])
+bot.run(os.environ["TOKEN"])
