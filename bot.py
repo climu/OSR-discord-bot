@@ -4,11 +4,8 @@ import dotenv
 import discord
 from discord.ext import commands
 from datetime import datetime
-import asyncio
 import requests
-import aiohttp
 import re
-import kgs
 from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 from typing import Dict, List, Tuple  # noqa
@@ -117,7 +114,6 @@ async def on_message(message):
         if message.channel == bot.get_channel(channels["general"]) and ctx.author != bot.user:
             text = str(ctx.author.display_name) + ": " + message.content
             kgs_to_send.append(text)
-        return
 
     await bot.process_commands(message)
 
@@ -167,12 +163,12 @@ for role, role_dict in roles_dict.items():
 async def no(ctx, role_name):
     role_dict = roles_dict.get(role_name)
     if role_dict is None:
-        return
+        pass
     if str(ctx.message.channel) not in role_dict['allowed_channels']:
         message = "Please " + ctx.message.author.mention + ", use the appropriate channels for this command: "
         message += ', '.join(role_dict['allowed_channels'])
         await ctx.send(message)
-        return
+
     role = role_dict["role"]
 
     await ctx.message.author.remove_roles(role)
@@ -253,7 +249,7 @@ async def rank(ctx: commands.Context, username: str = None) -> None:
                 await ctx.send(file=file)
 
                 os.remove('Rank.png')
-        return
+        pass
     # Look for nearest matches, if they exist
     users = bot.get_guild(guild_id).members  # type: List[discord.Member]
     # Just using sequencematcher because its simple and no need to install extra Library
